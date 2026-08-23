@@ -4,3 +4,5 @@ data/
 out/*.json
 __pycache__/
 .venv/
+out/*.log
+out/archive/
