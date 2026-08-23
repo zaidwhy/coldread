@@ -110,3 +110,54 @@ an anti-correlated start is the signature of inference, not lookup.
 
 Scope of the claim: this rules out verbatim memorisation of this corpus by this model. It does
 not prove no model has ever memorised it.
+
+## Replication on a second model family (2026-08-23)
+
+Identical sample, prompt, seed and battery, run through `llama3.1:8b` - different lab,
+different corpus, comparable size. 504 calls, 0 errors, 0 unparsed.
+
+| words | gender | age band | sign (control) |
+|---|---|---|---|
+| 25 | 59.7% [0.48, 0.70] | **44.4%** [0.34, 0.56] | 6.9% |
+| 50 | **68.1%** [0.57, 0.78] | 40.3% [0.30, 0.52] | 1.4% |
+| 100 | 70.8% [0.59, 0.80] | 50.0% [0.39, 0.61] | 4.2% |
+| 200 | 75.0% [0.64, 0.84] | 45.8% [0.35, 0.57] | 2.8% |
+| 400 | 77.8% [0.67, 0.86] | 50.0% [0.39, 0.61] | 6.9% |
+| 800 | 83.3% [0.73, 0.90] | 51.4% [0.40, 0.63] | 8.3% |
+| 1600 | 90.3% [0.81, 0.95] | 59.7% [0.48, 0.70] | 8.3% |
+
+| | qwen2.5:7b-instruct | llama3.1:8b |
+|---|---|---|
+| gender half-life | 800 words | **50 words** |
+| gender at 1600 words | 72.2% | 90.3% |
+| age band half-life | 100 words | 25 words |
+| age band at 1600 words | 58.3% | 59.7% |
+| star sign (control) | never | never |
+
+### What replicated
+
+- **The control held in both.** Star sign never cleared its bar at any step in either model.
+  This is the load-bearing check and it survived a second family.
+- **Age clears earlier than gender in both**, despite the absolute numbers differing wildly.
+- **The age ceiling is close to identical**: 58.3% and 59.7% at 1600 words, from two unrelated
+  models. Age band in blog text appears to cap near 60% regardless of the reader.
+
+### What did not replicate
+
+- **The below-chance zone is Qwen-specific.** Qwen reads 44.4% on gender at 25 words; Llama
+  reads 59.7% and is above chance from the first step. The claim in "Three findings" above that
+  short samples produce confidently wrong guesses describes one model, not language models.
+  It is retained above as originally written, and corrected here.
+- **The absolute half-life does not transfer at all.** 800 words versus 50 is a sixteen-fold
+  difference on identical text.
+
+### The finding this replaces the original headline with
+
+**The anonymity half-life is not a property of the text. It is a property of the reader.**
+
+Same 72 authors, same words, same prompt. One model needs 800 words to beat a coin flip on
+gender; another needs 50 and reaches 90.3% by 1600. No statement of the form "you are anonymous
+for N words" is meaningful without naming the model, and N falls as models improve. The three
+models run so far line up suggestively - `qwen2.5:3b` is a constant predictor, `qwen2.5:7b`
+starts anti-correlated and climbs, `llama3.1:8b` is accurate immediately - but family and size
+are confounded across them, so that ladder is a hypothesis and not a result.

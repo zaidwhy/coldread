@@ -149,6 +149,7 @@ def seat_view(seat):
     return {
         "seat": seat,
         "word_count": word_count,
+        "model": MODEL,
         "profile": SESSION["profiles"][seat],
         "error": SESSION["errors"][seat],
         # Below 100 words the sweep measured accuracy BELOW chance, not just
