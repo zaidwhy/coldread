@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>COLD READ</title>
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --panel: #15171c;
+    --border: #2a2d35;
+    --text: #e6e6e6;
+    --muted: #8a8f98;
+    --bad: #d9534f;
+    --ok: #4f9d69;
+    --control: #6b6f78;
+    --accent: #cfa93a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+  }
+  .screen {
+    max-width: 640px;
+    margin: 10vh auto;
+    padding: 32px;
+  }
+  h1 {
+    letter-spacing: 0.08em;
+    font-size: 1.6em;
+    margin-bottom: 4px;
+  }
+  .sub { color: var(--muted); margin-bottom: 24px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .card p { line-height: 1.5; }
+  button {
+    background: var(--accent);
+    color: #1a1400;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95em;
+  }
+  button:disabled { opacity: 0.4; cursor: default; }
+  button.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  input[type=text] {
+    background: #0e0f13;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.95em;
+  }
+
+  /* main layout */
+  #app { display: none; height: 100vh; }
+  #app.active { display: flex; }
+  .col { display: flex; flex-direction: column; }
+  #chat-col {
+    flex: 1.1;
+    border-right: 1px solid var(--border);
+    min-width: 0;
+  }
+  #profiles-col {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    gap: 16px;
+  }
+  header.bar {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  header.bar .title { letter-spacing: 0.08em; font-weight: 600; }
+  header.bar .seat-label { color: var(--muted); font-size: 0.85em; }
+  #transcript {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .msg {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    max-width: 80%;
+    line-height: 1.4;
+  }
+  .msg.mine { background: #22303a; margin-left: auto; }
+  .msg.theirs { background: #1f2026; margin-right: auto; }
+  .msg .who { display: block; font-size: 0.7em; color: var(--muted); margin-bottom: 2px; }
+  #composer {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+  #composer input { flex: 1; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .panel .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .panel .head .name { font-weight: 600; letter-spacing: 0.03em; }
+  .panel .head .count { color: var(--muted); font-size: 0.85em; }
+  .drain { color: var(--muted); font-size: 0.82em; margin-bottom: 10px; }
+  .warn {
+    background: #2a1414;
+    border: 1px solid var(--bad);
+    color: #f1a7a4;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.82em;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .field {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid #1f2026;
+    gap: 10px;
+  }
+  .field:last-child { border-bottom: none; }
+  .field .label { color: var(--muted); font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .field .value { text-align: right; font-size: 0.92em; }
+  .tag {
+    display: inline-block;
+    font-size: 0.68em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .tag.inferable { background: rgba(79,157,105,0.18); color: var(--ok); }
+  .tag.unreliable { background: rgba(217,83,79,0.18); color: var(--bad); }
+  .tag.control { background: rgba(107,111,120,0.25); color: var(--control); }
+  .empty { color: var(--muted); font-size: 0.88em; }
+</style>
+</head>
+<body>
+
+<div id="gate" class="screen">
+  <h1>COLD READ</h1>
+  <div class="sub">seat <span id="gate-seat">?</span></div>
+  <div class="card" id="gate-card">
+    <p>This page reads only what you type into it, on this screen, in this
+    session. It does not read anything else on your device.</p>
+    <p>Every message you send is used to build a profile of you: gender,
+    age band, star sign, an occupation guess, and a guess at what you seem
+    anxious about. The other participant sees that profile fill in live, and
+    you see theirs.</p>
+    <p>Nothing leaves this machine. The model runs locally. Nothing is
+    saved once the server stops.</p>
+    <p>Profiling does not start until both seats have agreed to this.</p>
+    <button id="consent-btn">I understand, and I consent</button>
+  </div>
+</div>
+
+<div id="waiting" class="screen" style="display:none;">
+  <h1>COLD READ</h1>
+  <div class="card"><p>Waiting for the other seat to consent...</p></div>
+</div>
+
+<div id="app">
+  <div class="col" id="chat-col">
+    <header class="bar">
+      <span class="title">COLD READ</span>
+      <span class="seat-label">you are seat <span id="my-seat"></span></span>
+    </header>
+    <div id="transcript"></div>
+    <div id="composer">
+      <input type="text" id="msg-input" placeholder="type a message and send it" autocomplete="off">
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+  <div class="col" id="profiles-col">
+    <div class="panel" id="panel-mine"></div>
+    <div class="panel" id="panel-theirs"></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const seat = params.get("seat");
+const other = seat === "a" ? "b" : "a";
+
+if (seat !== "a" && seat !== "b") {
+  document.body.innerHTML = "<div class='screen'><h1>COLD READ</h1>" +
+    "<div class='card'><p>Open this page with ?seat=a or ?seat=b in the URL.</p></div></div>";
+  throw new Error("no seat");
+}
+
+document.getElementById("gate-seat").textContent = seat.toUpperCase();
+document.getElementById("my-seat").textContent = seat.toUpperCase();
+
+let consented = false;
+let pollTimer = null;
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`${res.status}: ${body}`);
+  }
+  return res.json();
+}
+
+document.getElementById("consent-btn").addEventListener("click", async () => {
+  await api("/api/consent", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ seat }),
+  });
+  consented = true;
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("waiting").style.display = "block";
+  startPolling();
+});
+
+document.getElementById("send-btn").addEventListener("click", sendMessage);
+document.getElementById("msg-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
+
+async function sendMessage() {
+  const input = document.getElementById("msg-input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  try {
+    await api("/api/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ seat, text }),
+    });
+  } catch (err) {
+    console.error(err);
+  }
+  refresh();
+}
+
+function startPolling() {
+  refresh();
+  pollTimer = setInterval(refresh, 2000);
+}
+
+async function refresh() {
+  let data;
+  try {
+    data = await api("/api/state");
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+
+  if (data.consent[seat] && !consented) {
+    consented = true;
+  }
+
+  if (!data.both_consented) {
+    document.getElementById("gate").style.display = consented ? "none" : "block";
+    document.getElementById("waiting").style.display = consented ? "block" : "none";
+    document.getElementById("app").classList.remove("active");
+    return;
+  }
+
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("waiting").style.display = "none";
+  document.getElementById("app").classList.add("active");
+
+  renderTranscript(data.messages);
+  renderPanel(document.getElementById("panel-mine"), "You", data.seats[seat]);
+  renderPanel(document.getElementById("panel-theirs"), "Them", data.seats[other]);
+}
+
+function renderTranscript(messages) {
+  const el = document.getElementById("transcript");
+  const wasAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 20;
+  el.innerHTML = messages.map(m => {
+    const mine = m.seat === seat;
+    const who = mine ? "You" : "Them";
+    return `<div class="msg ${mine ? "mine" : "theirs"}">
+      <span class="who">${who}</span>${escapeHtml(m.text)}
+    </div>`;
+  }).join("");
+  if (wasAtBottom || messages.length <= 1) {
+    el.scrollTop = el.scrollHeight;
+  }
+}
+
+function escapeHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderPanel(el, name, view) {
+  if (!view.profile) {
+    el.innerHTML = `
+      <div class="head"><span class="name">${name}</span>
+      <span class="count">${view.word_count} words</span></div>
+      <div class="empty">no words yet - nothing to profile</div>`;
+    return;
+  }
+
+  const p = view.profile;
+  const ageTag = view.age_inferable
+    ? '<span class="tag inferable">inferable</span>'
+    : '<span class="tag unreliable">unreliable</span>';
+  const genderTag = view.gender_inferable
+    ? '<span class="tag inferable">inferable</span>'
+    : '<span class="tag unreliable">unreliable</span>';
+
+  let warn = "";
+  if (view.below_chance) {
+    warn = `<div class="warn">UNRELIABLE - below 100 words this machine
+      scores worse than a coin flip (44%). These are confidently wrong
+      guesses, not honest uncertainty.</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="head"><span class="name">${name}</span>
+    <span class="count">${view.word_count} words</span></div>
+    <div class="drain">${view.drain}</div>
+    ${warn}
+    <div class="field"><span class="label">Gender ${genderTag}</span>
+      <span class="value">${escapeHtml(String(p.gender ?? "-"))}</span></div>
+    <div class="field"><span class="label">Age band ${ageTag}</span>
+      <span class="value">${escapeHtml(String(p.age_band ?? "-"))}</span></div>
+    <div class="field"><span class="label">Star sign <span class="tag control">control - never inferable</span></span>
+      <span class="value">${escapeHtml(String(p.sign ?? "-"))}</span></div>
+    <div class="field"><span class="label">Occupation guess</span>
+      <span class="value">${escapeHtml(String(p.occupation_guess ?? "-"))}</span></div>
+    <div class="field"><span class="label">Seems anxious about</span>
+      <span class="value">${escapeHtml(String(p.anxious_about ?? "-"))}</span></div>
+  `;
+}
+
+// If this seat already consented in an earlier load (server restarted or
+// page refreshed), skip straight past the gate instead of re-showing it.
+(async () => {
+  try {
+    const data = await api("/api/state");
+    if (data.consent[seat]) {
+      consented = true;
+      document.getElementById("gate").style.display = "none";
+      document.getElementById("waiting").style.display = "block";
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  startPolling();
+})();
+</script>
+</body>
+</html>
