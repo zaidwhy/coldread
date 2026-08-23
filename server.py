@@ -134,11 +134,14 @@ def seat_text(seat):
 
 
 def drain_text(word_count):
+    remaining = None
     if word_count < AGE_THRESHOLD:
-        return f"anonymous for {AGE_THRESHOLD - word_count} more words"
-    if word_count < GENDER_THRESHOLD:
-        return f"anonymous for {GENDER_THRESHOLD - word_count} more words"
-    return "as known as this gets"
+        remaining = AGE_THRESHOLD - word_count
+    elif word_count < GENDER_THRESHOLD:
+        remaining = GENDER_THRESHOLD - word_count
+    if remaining is None:
+        return "as known as this gets"
+    return f"anonymous for {remaining} more word{'' if remaining == 1 else 's'}"
 
 
 def seat_view(seat):

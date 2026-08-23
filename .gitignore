@@ -6,3 +6,5 @@ __pycache__/
 .venv/
 out/*.log
 out/archive/
+*.png
+.playwright-mcp/
