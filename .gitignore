@@ -7,4 +7,5 @@ __pycache__/
 out/*.log
 out/archive/
 *.png
+!docs/screenshot.png
 .playwright-mcp/
