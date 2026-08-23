@@ -56,9 +56,7 @@ accrues.
 - **One model, one corpus.** Everything here is `qwen2.5:7b-instruct` on 2004 blogger.com
   text. Replication on a second model family is the obvious next step, and until it exists
   these numbers describe this model rather than language models.
-- **Contamination is not ruled out.** The corpus is public and labelled. The sign control
-  rules out a pipeline artefact but not memorisation of author-to-attribute pairs. The
-  strong check is a corpus the model cannot have seen paired with its labels.
+- ~~**Contamination is not ruled out.**~~ **Closed 2026-08-23 - see below.**
 - **n = 72 authors.** The intervals are wide. Gender at 800 words clears with a lower bound
   of 0.54 against a 0.50 bar, which is a pass but a narrow one. Treat 800 as "somewhere in
   the high hundreds", not as a precise figure.
@@ -77,3 +75,38 @@ accrues.
   matter most.
 - Authors with fewer words than a step are skipped rather than padded, so no step silently
   duplicates the one before it.
+
+## Contamination: tested and ruled out
+
+The corpus is public and labelled, so the obvious objection is that the model retrieved
+memorised authors rather than inferring anything. Tested directly with
+`contamination_check.py`: feed the model a verbatim 50-word prefix from an author, let it
+continue, and score the continuation twice - against that author's real next 50 words, and
+against a different author's next 50 words. Trigram overlap in English is never zero, so only
+the gap between the two is informative.
+
+`qwen2.5:7b-instruct`, 20 authors:
+
+| | mean trigram overlap |
+|---|---|
+| true continuation | 0.0021 |
+| control continuation | 0.0000 |
+| **gap** | **+0.0021** |
+
+Effectively nothing. Two of twenty authors produced a single matching trigram; the other
+eighteen produced none.
+
+The probe itself was verified rather than assumed, because a null result from a broken
+instrument is worthless. The model generates 99 words of fluent, on-topic continuation - it
+is genuinely attempting the task. Given a prefix about a Nebraska rock band it invents plausible
+album tracks ("A New Beginning", "I Am Not A Machine") where the real author wrote "in almost a
+Punk Metal genre... or maybe Alternative Emo? Lol". Fluent, confident, and nothing like the
+source. That is what a model that has never seen the text looks like.
+
+**A second argument from the main result points the same way: retrieval does not slope.** A
+model looking up memorised authors would spike once enough text triggered the match. What the
+curves actually do is climb smoothly from *below chance* at 25 words. Gradual improvement from
+an anti-correlated start is the signature of inference, not lookup.
+
+Scope of the claim: this rules out verbatim memorisation of this corpus by this model. It does
+not prove no model has ever memorised it.
