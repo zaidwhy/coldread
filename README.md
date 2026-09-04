@@ -1,5 +1,8 @@
 # COLD READ
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22309660.svg)](https://doi.org/10.5281/zenodo.22309660)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 **How many words can you write before a machine knows who you are?**
 
 I went looking for a number. What I found was that the question is malformed, and the

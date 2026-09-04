@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this project or its findings, please cite it as below."
-title: "COLD READ: The Anonymity Half-Life of Written Text"
+title: "COLD READ: The Anonymity Half-Life Is a Property of the Reader"
 authors:
   - family-names: "Syed"
     given-names: "Zaid Ali"
@@ -9,6 +9,7 @@ date-released: 2026-08-23
 url: "https://github.com/zaidwhy/coldread"
 repository-code: "https://github.com/zaidwhy/coldread"
 license: MIT
+doi: "10.5281/zenodo.22309660"
 abstract: >
   Measures how many words a person must write before a language model
   can infer who they are. Finds that the anonymity half-life is a
