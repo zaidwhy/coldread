@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this project or its findings, please cite it as below."
+title: "COLD READ: The Anonymity Half-Life of Written Text"
+authors:
+  - family-names: "Syed"
+    given-names: "Zaid Ali"
+date-released: 2026-08-23
+url: "https://github.com/zaidwhy/coldread"
+repository-code: "https://github.com/zaidwhy/coldread"
+license: MIT
+abstract: >
+  Measures how many words a person must write before a language model
+  can infer who they are. Finds that the anonymity half-life is a
+  property of the reader model, not the text - one model needs 800
+  words to infer gender, another needs 50, on the same text.
