@@ -5,6 +5,8 @@
 
 **How many words can you write before a machine knows who you are?**
 
+<img src="https://raw.githubusercontent.com/zaidwhy/zaidwhy/main/assets/coldread-curves.svg" alt="Gender inference accuracy against words shown, for two models. llama3.1:8b clears chance at 50 words, qwen2.5:7b at 800. The star sign control never leaves its floor." width="100%">
+
 I went looking for a number. What I found was that the question is malformed, and the
 reason it is malformed is more interesting than the number would have been.
 
@@ -203,3 +205,21 @@ python server.py                                    # then open ?seat=a and ?sea
 
 Raw per-call results for both models are committed under `out/`, so every table in
 [`RESULT.md`](RESULT.md) can be regenerated without re-running a single model call.
+
+## Copyright, citation, and provenance
+
+**Copyright (c) 2026 Zaid Ali Syed.** ORCID [0009-0003-4313-1510](https://orcid.org/0009-0003-4313-1510).
+
+The code in this repository is MIT licensed - see [LICENSE](LICENSE) - and you are free to use
+it with the copyright notice retained, as the licence requires. **The written analysis, the
+experimental design, and the findings are original scholarly work.** If you build on them, cite
+the archived record rather than reproducing the text:
+
+> Syed, Z. A. (2026). *COLD READ: The Anonymity Half-Life Is a Property of the Reader*.
+> Zenodo. https://doi.org/10.5281/zenodo.22309660
+
+The DOI above is the concept DOI: it always resolves to the newest archived version. Machine-readable
+metadata is in [`CITATION.cff`](CITATION.cff), and GitHub's "Cite this repository" panel reads it directly.
+
+Every commit here is signed with ed25519 key `EFE9 4832 B2B9 80D9 B583 91F2 8FAA BCC1 B1AC 09E5`
+and shows as Verified on GitHub. A commit in my name without a valid signature was not made by me.
