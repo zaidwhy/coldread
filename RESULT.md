@@ -51,6 +51,22 @@ knowledge accumulates from zero.
 at a threshold. "Anonymous until word N, exposed after" is the wrong mental model; exposure
 accrues.
 
+## Where this sits against prior work
+
+- **The task is old.** Argamon, Koppel, Pennebaker and Schler (CACM, 2009) profiled age and gender
+  from this same blog corpus by statistical means.
+- **The length axis is old too.** Eder (Digital Scholarship in the Humanities, 2015) showed
+  authorship attribution degrades with sample length and collapses below a minimum. That work
+  sweeps length against one fixed method.
+- **The LLM capability is established.** Staab et al. (arXiv:2310.07298) measured attribute
+  inference by LLMs at near-human accuracy; Lermen et al. (arXiv:2602.16800) demonstrated
+  large-scale profile linkage. Neither sweeps input size.
+
+What is measured here is the interaction the older length work holds fixed and the newer capability
+work does not sweep: the same 72 authors and the same slices read by two different models, where the
+threshold moves by a factor of sixteen. The negative control and the second model family are what
+make that a measurement rather than an anecdote.
+
 ## Caveats
 
 - **One model, one corpus.** Everything here is `qwen2.5:7b-instruct` on 2004 blogger.com

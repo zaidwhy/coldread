@@ -177,22 +177,44 @@ asked not to.
 
 ## Prior work, and the gap
 
-Two results frame this one. **Beyond Memorization** (arXiv 2310.07298) established that
-language models can infer personal attributes from ordinary text at close to human accuracy
-and a fraction of the cost, treating inference as a capability. **Large-scale online
-deanonymization with LLMs** (arXiv 2602.16800) established that models can link two
-pseudonymous profiles to each other, and argues that practical obscurity no longer holds.
+Three lines of work frame this one, and it is worth being precise about which parts are theirs.
 
-Neither sweeps input size. Neither reports the point on that axis where a writer stops being
-anonymous, and so neither is in a position to notice that the point belongs to the reader
-rather than the writing. That is the gap this measures - with a negative control, and with a
-second reader to check that the number was not a fact about the first one.
+**Classical author profiling.** Argamon, Koppel, Pennebaker and Schler (*Automatically profiling
+the author of an anonymous text*, Communications of the ACM, 2009) established that age and gender
+are recoverable from ordinary writing by statistical means, on this same blog corpus. The task is
+theirs, not mine.
+
+**Sample length in stylometry.** The text-length axis is also not new: Eder (*Does size matter?
+Authorship attribution, small samples, big problem*, Digital Scholarship in the Humanities, 2015)
+made exactly the point that attribution accuracy depends on how much text you have and collapses
+below a minimum. So "how many words does it take" is an old question. What that literature holds
+fixed is the classifier: one method, swept over length.
+
+**LLM-era inference.** Staab, Vero, Balunovic and Vechev (*Beyond Memorization: Violating Privacy
+Via Inference with Large Language Models*, arXiv:2310.07298, 2023) showed language models infer
+personal attributes from ordinary text at close to human accuracy and a fraction of the cost.
+Lermen, Paleka, Swanson, Aerni, Carlini and Tramer (*Large-scale online deanonymization with LLMs*,
+arXiv:2602.16800, 2026) showed models can link pseudonymous profiles to each other at scale, and
+argue practical obscurity no longer holds. Both treat inference as a capability and measure how far
+it reaches.
+
+**The gap.** Neither LLM-era result sweeps input size, so neither reports the point on that axis
+where a writer stops being anonymous. And the older length-sweep literature sweeps length against a
+single method, so it cannot see the effect that turns out to dominate: **swap the reader and the
+threshold moves by a factor of sixteen on identical text.** That is what is measured here, with a
+labelled negative control to show a curve cannot rise on its own, and with a second model family to
+check that the number was not a fact about the first one.
+
+The consequence is a claim about the shape of the question rather than about a number. A guideline
+of the form "you are identifiable after N words" is incomplete without naming the reader, and N is
+not a constant being measured more precisely over time - it falls as models improve.
 
 ## Reproduce
 
-Requires a local Ollama with the target models pulled. The corpus is the Blog Authorship
-Corpus (Schler et al. 2006), available as `tasksource/blog_authorship_corpus` on Hugging
-Face, free for non-commercial research. It is gitignored here, not redistributed.
+Requires a local Ollama with the target models pulled. The corpus is the Blog Authorship Corpus
+(Schler, Koppel, Argamon and Pennebaker, *Effects of Age and Gender on Blogging*, AAAI Spring
+Symposium on Computational Approaches to Analyzing Weblogs, 2006), available as
+`tasksource/blog_authorship_corpus` on Hugging Face, free for non-commercial research. It is gitignored here, not redistributed.
 
 ```
 python build_sample.py                              # balanced 72-author sample
