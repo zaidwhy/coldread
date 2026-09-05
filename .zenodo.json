@@ -1,15 +1,16 @@
 {
   "title": "COLD READ: The Anonymity Half-Life Is a Property of the Reader",
-  "upload_type": "software",
+  "upload_type": "publication",
   "access_right": "open",
-  "license": "MIT",
+  "license": "cc-by-4.0",
   "creators": [
     {
       "name": "Syed, Zaid Ali",
-      "orcid": "0009-0003-4313-1510"
+      "orcid": "0009-0003-4313-1510",
+      "affiliation": "Independent researcher"
     }
   ],
-  "description": "<p>How many words can you write before a language model can infer who you are? This work went looking for that number and found that the question is malformed, which is itself the finding.</p><p>72 authors from the Blog Authorship Corpus, balanced across three age bands and both genders, were shown to local language models in growing slices of their own text (25 to 1600 words). At every step the model was forced to commit to gender, age band, and star sign. <strong>Star sign is the negative control</strong>: it is labelled in the corpus and is not inferable from prose. It never left its floor at any step in either model, which is the load-bearing check that makes the rest of the measurement trustworthy.</p><p><strong>Main result:</strong> the same 72 authors, the same words and the same prompt produce wildly different exposure curves depending on the model doing the reading. <code>qwen2.5:7b-instruct</code> needs roughly 800 words before gender inference clears a coin flip with a Wilson lower bound above 0.50; <code>llama3.1:8b</code> clears at 50 words and reaches 90.3% by 1600. That is a sixteen-fold difference on identical text. No claim of the form \"you are anonymous for N words\" is meaningful without naming the model, and N falls as models improve.</p><p>Secondary results: age band clears earlier than gender in both models but saturates near 60% in both, suggesting a ceiling that is a property of the text rather than the reader. Exposure accrues smoothly rather than snapping on at a threshold.</p><p><strong>A finding that did not replicate, reported as such:</strong> the first model read below chance at short lengths, suggesting that short samples surface stereotype matching rather than uncertainty. The second model was above chance from the first step. That claim therefore describes one model, not language models, and the write-up says so explicitly rather than quietly dropping it.</p><p><strong>Contamination was tested directly and ruled out</strong> rather than argued away, by scoring model continuations of a verbatim prefix against the author's real next words versus a different author's, with the probe itself verified to be functioning before its null result was accepted.</p><p>Repository contains the sampling and analysis code, the raw JSONL results for both model families, the contamination probe, and a consent-gated two-seat demonstration application.</p>",
+  "description": "<p>How many words can you write before a language model can infer who you are? This work went looking for that number and found that the question is malformed, which is itself the finding.</p><p>72 authors from the Blog Authorship Corpus, balanced across three age bands and both genders, were shown to local language models in growing slices of their own text (25 to 1600 words). At every step the model was forced to commit to gender, age band, and star sign. <strong>Star sign is the negative control</strong>: it is labelled in the corpus and is not inferable from prose. It never left its floor at any step in either model, which is the load-bearing check that makes the rest of the measurement trustworthy.</p><p><strong>Main result:</strong> the same 72 authors, the same words and the same prompt produce wildly different exposure curves depending on the model doing the reading. <code>qwen2.5:7b-instruct</code> needs roughly 800 words before gender inference clears a coin flip with a Wilson lower bound above 0.50; <code>llama3.1:8b</code> clears at 50 words and reaches 90.3% by 1600. That is a sixteen-fold difference on identical text. No claim of the form \"you are anonymous for N words\" is meaningful without naming the model, and N falls as models improve.</p><p>Secondary results: age band clears earlier than gender in both models but saturates near 60% in both, suggesting a ceiling that is a property of the text rather than the reader. Exposure accrues smoothly rather than snapping on at a threshold.</p><p><strong>A finding that did not replicate, reported as such:</strong> the first model read below chance at short lengths, suggesting that short samples surface stereotype matching rather than uncertainty. The second model was above chance from the first step. That claim therefore describes one model, not language models, and the write-up says so explicitly rather than quietly dropping it.</p><p><strong>Contamination was tested directly and ruled out</strong> rather than argued away, by scoring model continuations of a verbatim prefix against the author's real next words versus a different author's, with the probe itself verified to be functioning before its null result was accepted.</p><p><strong>Position against prior work:</strong> the profiling task is not new. Argamon, Koppel, Pennebaker and Schler (<em>Automatically profiling the author of an anonymous text</em>, Communications of the ACM, 2009) established that age and gender are recoverable from ordinary prose, on this same corpus. Nor is the length axis new: Eder (<em>Does size matter? Authorship attribution, small samples, big problem</em>, Digital Scholarship in the Humanities, 2015) showed attribution accuracy depends on sample length and collapses below a minimum, sweeping length against a fixed classifier. In the LLM era, Staab, Vero, Balunovic and Vechev (arXiv:2310.07298) measured attribute inference at near-human accuracy, and Lermen, Paleka, Swanson, Aerni, Carlini and Tramer (arXiv:2602.16800) demonstrated large-scale profile linkage; neither sweeps input size. The contribution here is the interaction those literatures hold fixed on one side or the other: length swept across two different readers, where the threshold moves sixteen-fold on identical text, with a labelled negative control and a second model family.</p><p>Repository contains the sampling and analysis code, the raw JSONL results for both model families, the contamination probe, and a consent-gated two-seat demonstration application.</p>",
   "keywords": [
     "authorship attribution",
     "privacy",
@@ -19,13 +20,29 @@
     "demographic inference",
     "negative control",
     "replication",
-    "text privacy"
+    "text privacy",
+    "stylometry",
+    "reproducibility",
+    "reader-dependent thresholds"
   ],
   "related_identifiers": [
     {
       "identifier": "https://github.com/zaidwhy/coldread",
       "relation": "isSupplementTo",
       "scheme": "url"
+    },
+    {
+      "identifier": "10.48550/arXiv.2310.07298",
+      "relation": "cites",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.48550/arXiv.2602.16800",
+      "relation": "cites",
+      "scheme": "doi"
     }
-  ]
+  ],
+  "publication_type": "report",
+  "language": "eng",
+  "notes": "Every commit in the source repository is signed with ed25519 key EFE9 4832 B2B9 80D9 B583 91F2 8FAA BCC1 B1AC 09E5 and shows as Verified on GitHub. The code in the repository is MIT licensed; this deposit, which is the written analysis and the experimental design, is CC BY 4.0 and requires attribution. The Blog Authorship Corpus itself is not redistributed here. ORCID 0009-0003-4313-1510."
 }
