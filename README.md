@@ -5,7 +5,7 @@
 
 **How many words can you write before a machine knows who you are?**
 
-<img src="https://raw.githubusercontent.com/zaidwhy/zaidwhy/main/assets/coldread-curves.svg" alt="Gender inference accuracy against words shown, for two models. llama3.1:8b clears chance at 50 words, qwen2.5:7b at 800. The star sign control never leaves its floor." width="100%">
+<img src="docs/coldread-curves.svg" alt="Gender inference accuracy against words shown, for two models. llama3.1:8b clears chance at 50 words, qwen2.5:7b at 800. The star sign control never leaves its floor." width="100%">
 
 I went looking for a number. What I found was that the question is malformed, and the
 reason it is malformed is more interesting than the number would have been.
