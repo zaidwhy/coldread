@@ -9,7 +9,7 @@ Doc of record: `RESULT.md` (findings) and `HANDOFF.md` (open work). Read `/resea
 |---|---|
 | Env | global Python 3.12+ is fine; `pip install -r requirements.txt` |
 | Sweep (needs Ollama at 127.0.0.1:11434 with `qwen2.5:7b-instruct` / `llama3.1:8b`) | `python sweep.py --model qwen2.5:7b-instruct` (resumable JSONL in `out/`) |
-| Analyze shipped results | `python analyze.py out/results-qwen2.5_7b-instruct.jsonl` |
+| Analyze shipped results | `python analyze.py out/results-qwen2.5_7b-instruct.jsonl` (add `--json` for structured output) |
 | Two-seat live app | `python server.py` then open http://127.0.0.1:8420 |
 | Tests | `pytest -q` (smoke: analysis reproduces the headline numbers from the committed JSONL) |
 | Verification scripts | `python verify_run.py`, `python contamination_check.py` |

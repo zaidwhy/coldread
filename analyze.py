@@ -5,7 +5,7 @@ and locates the anonymity half-life: the smallest number of words at which the
 lower bound of the interval clears chance. The star-sign row is the control and
 should never clear it.
 
-Usage: python analyze.py out/results-qwen2.5_3b-instruct.jsonl
+Usage: python analyze.py out/results-qwen2.5_3b-instruct.jsonl [--json]
 """
 
 import json
@@ -56,7 +56,8 @@ def norm(attr, value):
     return v
 
 
-def main(path):
+def analyse(path):
+    """Everything the report shows, as data: per-step accuracy with Wilson bounds, and the half-lives."""
     rows = [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
     CHANCE = baselines(rows)
 
@@ -75,41 +76,94 @@ def main(path):
             tally[attr][r["n_words"]] = [hits + (pred == truth), total + 1]
 
     steps = sorted({r["n_words"] for r in rows})
-    model = rows[0]["model"] if rows else "?"
-
-    print(f"model: {model}   records: {len(rows)}   unparsed: {unparsed}\n")
-
-    lines = []
-    header = f"| {'words':>6} | " + " | ".join(f"{a:^22}" for a in ATTRS) + " |"
-    lines.append(header)
-    lines.append("|" + "-" * 8 + "|" + "|".join(["-" * 24] * len(ATTRS)) + "|")
-
-    for n in steps:
-        cells = []
-        for attr in ATTRS:
-            hits, total = tally[attr].get(n, [0, 0])
-            if total == 0:
-                cells.append(f"{'-':^22}")
-                continue
-            lo, hi = wilson(hits, total)
-            mark = "*" if lo > CHANCE[attr] else " "
-            cells.append(f"{hits/total:5.1%} [{lo:.2f},{hi:.2f}] n={total:<3}{mark}")
-        lines.append(f"| {n:>6} | " + " | ".join(cells) + " |")
-
-    print("\n".join(lines))
-    print("\nbest constant guess: " + ", ".join(f"{a}={CHANCE[a]:.1%}" for a in ATTRS))
-    print("* = 95% lower bound clears the best constant guess\n")
-
-    for attr in ATTRS:
-        crossing = next(
+    half_life = {
+        attr: next(
             (n for n in steps
              if tally[attr].get(n, [0, 0])[1] > 0
              and wilson(*tally[attr][n])[0] > CHANCE[attr]),
             None,
         )
+        for attr in ATTRS
+    }
+    cells = {}
+    for n in steps:
+        for attr in ATTRS:
+            hits, total = tally[attr].get(n, [0, 0])
+            lo, hi = wilson(hits, total)
+            cells[(n, attr)] = {"hits": hits, "total": total, "lo": lo, "hi": hi, "clears": total > 0 and lo > CHANCE[attr]}
+    return {
+        "model": rows[0]["model"] if rows else "?",
+        "records": len(rows),
+        "unparsed": unparsed,
+        "chance": CHANCE,
+        "steps": steps,
+        "cells": cells,
+        "half_life": half_life,
+    }
+
+
+def as_json(a):
+    return {
+        "model": a["model"],
+        "records": a["records"],
+        "unparsed": a["unparsed"],
+        "best_constant_guess": {k: round(v, 6) for k, v in a["chance"].items()},
+        "steps": [
+            {
+                "words": n,
+                **{
+                    attr: {
+                        "hits": c["hits"],
+                        "total": c["total"],
+                        "accuracy": round(c["hits"] / c["total"], 6) if c["total"] else None,
+                        "wilson_95": [round(c["lo"], 6), round(c["hi"], 6)],
+                        "clears_best_constant_guess": c["clears"],
+                    }
+                    for attr in ATTRS
+                    for c in [a["cells"][(n, attr)]]
+                },
+            }
+            for n in a["steps"]
+        ],
+        "half_life_words": a["half_life"],
+    }
+
+
+def main(path, emit_json=False):
+    a = analyse(path)
+    if emit_json:
+        print(json.dumps(as_json(a), indent=2))
+        return
+    CHANCE = a["chance"]
+
+    print(f"model: {a['model']}   records: {a['records']}   unparsed: {a['unparsed']}\n")
+
+    lines = []
+    header = f"| {'words':>6} | " + " | ".join(f"{x:^22}" for x in ATTRS) + " |"
+    lines.append(header)
+    lines.append("|" + "-" * 8 + "|" + "|".join(["-" * 24] * len(ATTRS)) + "|")
+
+    for n in a["steps"]:
+        row = []
+        for attr in ATTRS:
+            c = a["cells"][(n, attr)]
+            if c["total"] == 0:
+                row.append(f"{'-':^22}")
+                continue
+            mark = "*" if c["clears"] else " "
+            row.append(f"{c['hits']/c['total']:5.1%} [{c['lo']:.2f},{c['hi']:.2f}] n={c['total']:<3}{mark}")
+        lines.append(f"| {n:>6} | " + " | ".join(row) + " |")
+
+    print("\n".join(lines))
+    print("\nbest constant guess: " + ", ".join(f"{x}={CHANCE[x]:.1%}" for x in ATTRS))
+    print("* = 95% lower bound clears the best constant guess\n")
+
+    for attr in ATTRS:
+        crossing = a["half_life"][attr]
         label = " (CONTROL - should be None)" if attr == "sign" else ""
         print(f"half-life {attr:9}: {crossing if crossing else 'never'} words{label}")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "out/results.jsonl")
+    args = [x for x in sys.argv[1:] if x != "--json"]
+    main(args[0] if args else "out/results.jsonl", emit_json="--json" in sys.argv[1:])

@@ -2,6 +2,10 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## Unreleased
+
+- `analyze.py --json`: the same analysis as structured output (per-step hits, totals, accuracy, Wilson bounds, clears-baseline flag, half-lives), so tables can be generated instead of typed. The text report is byte-identical to before; tests check the JSON against the committed results.
+
 ## v1.1.0 - 2026-09-27
 
 - Third model family written up: `mistral:7b` (same 7-8B class, identical sample, seed and prompt) in `RESULT.md`, README, Zenodo description and CITATION. Gender half-life 50 / 800 / 1600 words across the three readers (thirty-two-fold at one size); the shared ~60% age ceiling is withdrawn; the below-chance dip is not supported in any model. Smoke test covers all three result files.

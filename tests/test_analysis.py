@@ -44,3 +44,15 @@ def test_gender_half_life_matches_result_md(path, expected, capsys):
     m = re.search(r"half-life gender\s*:\s*(\d+) words", out)
     assert m, out
     assert int(m.group(1)) == expected["gender_half_life"]
+
+
+@pytest.mark.parametrize("path,expected", RESULTS.items())
+def test_json_output_matches_the_table(path, expected, capsys):
+    analyze.main(str(ROOT / path), emit_json=True)
+    import json
+
+    data = json.loads(capsys.readouterr().out)
+    assert data["model"] == expected["model"]
+    assert data["half_life_words"]["gender"] == expected["gender_half_life"]
+    assert data["half_life_words"]["sign"] is None
+    assert all(set(s) >= {"words", "gender", "age_band", "sign"} for s in data["steps"])
