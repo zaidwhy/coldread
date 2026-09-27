@@ -50,12 +50,21 @@ be decided or executed by an agent.
   `llama3.1:8b`). The README says plainly that the "capability ladder" across
   those three is a hypothesis, not a result, because size and family both
   vary at once.
-- No third model family run.
+- No third model family run. *(Superseded 2026-09-22: `mistral:7b` ran, 504/504, 0 unparsed,
+  commit 623caa7; see the status note under "Exact next steps".)*
 - No extension beyond the two demographic attributes (gender, age band).
   Sign is the control, not a target; occupation and location are not tested
   and must not be claimed anywhere in this repo's public copy.
 
 ## Exact next steps, if anyone resumes this
+
+**Status 2026-09-27:** step 1's run exists but is not written up. `python analyze.py out/results-<model>.jsonl`
+on the three committed 7-8B result files gives gender half-life llama3.1:8b 50 words, qwen2.5:7b 800,
+mistral:7b 1600; age_band 25 / 100 / 25; the star-sign control never clears its floor in any of them
+(mistral's output reproduces `out/analysis-mistral_7b.txt` byte for byte). At one size class, family
+alone moves the gender half-life 32x, and the ordering flips by attribute (mistral slowest on gender,
+tied fastest on age_band). Remaining: the RESULT.md / README write-up, which changes the deposited
+report and so needs a new Zenodo version (Zaid's call); step 2 (two sizes of one new family) is still open.
 
 1. **Control the size/family confound.** Run a same-size, different-family
    model against the identical sample/prompt/seed/battery (e.g. an ~7-8B

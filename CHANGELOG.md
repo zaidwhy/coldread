@@ -6,7 +6,7 @@ Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was 
 
 - Added `docs/ARCHITECTURE.md`, `CONTRIBUTING.md`, issue templates and this changelog.
 - Added `scripts/run_model_sweep.ps1`: unattended pull, sweep, retry of failed rows and analysis for one model, with a status file.
-- Started a third model family run (`mistral:7b`) on 2026-09-21. Its result is not yet in `RESULT.md` or the README.
+- Third model family (`mistral:7b`): started 2026-09-21, completed 2026-09-22 (504/504, 0 unparsed; `out/results-mistral_7b.jsonl`, `out/analysis-mistral_7b.txt`). Its result is not yet in `RESULT.md` or the README.
 - Declared dependencies, added an analysis smoke test with CI, vendored the README chart into `docs/`, added `CLAUDE.md` and `AGENTS.md`.
 
 ## v1.0.3 - 2026-09-05
