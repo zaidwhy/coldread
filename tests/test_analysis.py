@@ -21,6 +21,8 @@ RESULTS = {
     "out/results-qwen2.5_7b-instruct.jsonl": {"model": "qwen2.5:7b-instruct", "gender_half_life": 800},
     "out/results-llama3.1_8b.jsonl": {"model": "llama3.1:8b", "gender_half_life": 50},
     "out/results-mistral_7b.jsonl": {"model": "mistral:7b", "gender_half_life": 1600},
+    # same family as llama3.1:8b at 3B; gender never clears within 1600 words (None = never)
+    "out/results-llama3.2_latest.jsonl": {"model": "llama3.2:latest", "gender_half_life": None},
 }
 
 
@@ -41,9 +43,10 @@ def test_control_never_clears_chance(path, expected, capsys):
 @pytest.mark.parametrize("path,expected", RESULTS.items())
 def test_gender_half_life_matches_result_md(path, expected, capsys):
     out = _run(path, capsys)
-    m = re.search(r"half-life gender\s*:\s*(\d+) words", out)
+    m = re.search(r"half-life gender\s*:\s*(\d+|never) words", out)
     assert m, out
-    assert int(m.group(1)) == expected["gender_half_life"]
+    expected_text = "never" if expected["gender_half_life"] is None else str(expected["gender_half_life"])
+    assert m.group(1) == expected_text
 
 
 @pytest.mark.parametrize("path,expected", RESULTS.items())

@@ -64,7 +64,10 @@ mistral:7b 1600; age_band 25 / 100 / 25; the star-sign control never clears its 
 (mistral's output reproduces `out/analysis-mistral_7b.txt` byte for byte). At one size class, family
 alone moves the gender half-life 32x, and the ordering flips by attribute (mistral slowest on gender,
 tied fastest on age_band). Written up 2026-09-27 in RESULT.md, README, CITATION and the Zenodo description, released as
-v1.1.0 (Zaid approved the new deposit). Still open: step 2 (two sizes of one new family) and step 3.
+v1.1.0 (Zaid approved the new deposit). Step 2 ran 2026-09-27 with llama at two sizes (llama3.2 3B against llama3.1:8b): the 3B reader never
+clears gender within 1600 words (8B: 50), age band at 100 (8B: 25); 501/504 rows, 3 lost to a deterministic
+runaway generation. Written into RESULT.md, not deposited (a new Zenodo version needs Zaid's go). Caveat: the
+two sizes are also two releases (3.2, 3.1). Still open: step 3.
 
 1. **Control the size/family confound.** Run a same-size, different-family
    model against the identical sample/prompt/seed/battery (e.g. an ~7-8B

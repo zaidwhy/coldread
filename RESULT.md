@@ -235,3 +235,45 @@ Mistral's gender pass is the narrowest in the study: it clears only at the last 
 bound of 0.52, so read its half-life as "about 1600 words or more". Still one corpus, 72 authors,
 demographic attributes only, and one size class; two sizes of one new family would test size
 directly.
+
+## Two sizes of one family (run 2026-09-27, not yet in the Zenodo record)
+
+The third-family section showed that family moves the threshold at one size. This asks the other
+half: inside one family, does size matter? `llama3.2` at 3.2B parameters (Q4_K_M) ran through the
+identical sample, seed, temperature and prompt as `llama3.1:8b`. Reproduce with
+`python analyze.py out/results-llama3.2_latest.jsonl` (add `--json` for the numbers below).
+
+Three of the 504 calls never finished: for two authors at 400 and 800 words the model generated
+until the 600-second read timeout on all five attempts. At temperature 0 that is deterministic, so
+the rows are reported missing rather than retried with a different setting; those two steps have
+n = 71 and n = 70, and the best constant guess moves slightly (gender 50.3%).
+
+| words | gender | age band | sign (control) |
+|---|---|---|---|
+| 25 | 45.8% [0.35, 0.57] | 43.1% [0.32, 0.55] | 11.1% [0.06, 0.20] |
+| 50 | 45.8% [0.35, 0.57] | 41.7% [0.31, 0.53] | 12.5% [0.07, 0.22] |
+| 100 | 47.2% [0.36, 0.59] | **52.8%** [0.41, 0.64] | 6.9% [0.03, 0.15] |
+| 200 | 47.2% [0.36, 0.59] | 55.6% [0.44, 0.66] | 4.2% [0.01, 0.12] |
+| 400 | 46.5% [0.35, 0.58] n=71 | 54.9% [0.43, 0.66] n=71 | 5.6% [0.02, 0.14] n=71 |
+| 800 | 55.7% [0.44, 0.67] n=70 | 51.4% [0.40, 0.63] n=70 | 2.9% [0.01, 0.10] n=70 |
+| 1600 | 61.1% [0.50, 0.72] | 63.9% [0.52, 0.74] | 5.6% [0.02, 0.13] |
+
+| | llama3.2 (3B) | llama3.1:8b |
+|---|---|---|
+| gender half-life | never (61.1% at 1600, lower bound 0.50) | 50 words |
+| age band half-life | 100 words | 25 words |
+| star sign (control) | never | never |
+
+### What this shows
+
+- **Size matters inside a family, and a lot.** The 8B model clears gender at 50 words; the 3B model
+  never clears it within 1600. Together with the previous section, both reader properties move the
+  threshold: family at a fixed size, and size within a family.
+- **The control held again.** Star sign never cleared its bar; its highest point was 12.5% at 50 words.
+- **Age still clears before gender**, now in all four readers that clear anything.
+
+### Scope
+
+This is one family at two sizes, and the two are also different releases (3.2 against 3.1), so
+"size" here means size plus one release step. `qwen2.5:3b` could not do the task at all (a constant
+predictor), which fits the same direction but is not a controlled comparison.
