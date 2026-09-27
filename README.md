@@ -7,6 +7,8 @@
 
 <img src="docs/coldread-curves.svg" alt="Gender inference accuracy against words shown, for two models. llama3.1:8b clears chance at 50 words, qwen2.5:7b at 800. The star sign control never leaves its floor." width="100%">
 
+<sub>Plate 02 shows the first two readers. The third, <code>mistral:7b</code> (gender at about 1600 words), is in <a href="RESULT.md">RESULT.md</a>.</sub>
+
 I went looking for a number. What I found was that the question is malformed, and the
 reason it is malformed is more interesting than the number would have been.
 
@@ -24,15 +26,15 @@ At every slice the model had to commit: gender, age band, star sign. No refusals
 "unknown", because an abstention would quietly bend the curve down at exactly the low word
 counts that matter most.
 
-Then I ran the identical text, the identical prompt, and the identical seed through a second
-model from a different lab.
+Then I ran the identical text, the identical prompt, and the identical seed through two more
+models from two other labs, all three in the same size class.
 
-**The line moved by a factor of sixteen.**
+**The line moved by a factor of thirty-two.**
 
-One model needs the better part of a thousand words before it beats a coin flip on gender.
-The other is past a coin flip almost immediately, and by the end of the same passage it is
-right nine times out of ten. Same authors. Same words. Same question. The only thing that
-changed was who was reading.
+One model is past a coin flip on gender almost immediately, and by the end of the passage it is
+right nine times out of ten. Another needs the better part of a thousand words. The third needs
+the whole sixteen hundred. Same authors. Same words. Same question. Same size of model. The only
+thing that changed was who was reading.
 
 ## The finding
 
@@ -56,7 +58,7 @@ labelled in the corpus and it is not inferable from writing - there is no causal
 being a Capricorn to how you punctuate. It went through the identical pipeline as the other
 two attributes: same prompt, same slices, same scoring.
 
-It never left the floor. Not once, at any word count, in either model.
+It never left the floor. Not once, at any word count, in any of the three models.
 
 That null result is what makes the rest trustworthy. If sign had climbed alongside gender
 and age, it would have meant the pipeline was leaking signal from somewhere other than the
@@ -69,20 +71,21 @@ I would rather have one measured attribute with a working control than five with
 ## Two shapes, not two speeds
 
 The two real attributes do not merely differ in how much text they need. They have different
-shapes, and the difference held across both models.
+shapes, and the order held across all three models: age clears before gender in every one.
 
-**Age is cheap and capped.** It becomes inferable almost immediately, then stops improving.
-Both models plateau at almost exactly the same ceiling - two unrelated architectures, trained
-by different labs on different data, converging on the same limit. That is a striking thing
-to see, and the most natural reading is that it is a fact about the text rather than about
-the models: blog prose seems to carry only so much age information, and both readers extract
-all of it and then stall.
+**Age is cheap, and I thought it was capped.** It becomes inferable almost immediately. The
+first two models then plateaued at almost exactly the same ceiling, near 60% - two unrelated
+architectures converging on the same limit, which I read as a fact about the text: blog prose
+carries only so much age information. The third model walked through that ceiling to 70.8% and
+was still climbing. The intervals are wide enough that I cannot say the ceilings truly differ,
+but the tidy story did not survive a third reader, so I have withdrawn it.
 
 **Gender is expensive and rising.** It takes far more text to become inferable, and then it
-keeps climbing. Neither model has found its ceiling by the end of the passage. Whatever
+keeps climbing. No model has found its ceiling by the end of the passage. Whatever
 carries gender in writing, it is a deeper seam than whatever carries age.
 
-Cheap-and-capped against expensive-and-unbounded is a structural difference. It means there
+Cheap against expensive is a structural difference, and the readers do not even agree on a
+ranking: the slowest reader of gender is tied fastest on age. It means there
 is no single anonymity curve to draw, even for one reader. Each attribute has its own.
 
 ## Exposure accrues, it does not switch on
@@ -103,7 +106,9 @@ at the time was that a short sample surfaces stereotype matching, which the genu
 only later overrides. It is a lovely story: ignorance would look like a coin flip, and this
 looked like confident wrongness.
 
-The second model did not do it. It was above chance from the very first slice.
+The second model did not do it. It was above chance from the very first slice. The third
+dipped to the same 44.4% at the first slice and recovered by the next; in no model does the
+interval at that slice exclude a coin flip, so the dip stays an observation, not a finding.
 
 So that finding describes one model, not language models, and I have left it in the record
 rather than quietly dropping it. It is exactly the kind of result that would have become a
@@ -167,10 +172,12 @@ asked not to.
 
 - **Seventy-two authors.** The intervals are wide. The gender threshold should be read as
   "somewhere in the high hundreds of words", not as a precise figure.
-- **Two models, plus a third that could not do the task at all.** A smaller model answered
-  the same way on every single call - a constant predictor, not a curve. Capability here is
-  sharply size-dependent as well as family-dependent, and size and family are confounded
-  across the three, so the apparent ladder between them is a hypothesis and not a result.
+- **Three models of one size class, plus a smaller one that could not do the task at all.** A
+  3B model answered the same way on every single call - a constant predictor, not a curve. Holding
+  size to the 7-8B class, family alone moves the gender threshold thirty-two-fold, so the spread is
+  not a size effect; whether size matters on top of family needs two sizes of one family.
+- **The third model's gender threshold is the narrowest pass in the study**: it clears only at the
+  last slice, so read it as "about sixteen hundred words or more".
 - **Demographic attributes only.** Gender and age band. The more invasive inferences reported
   elsewhere - income, location, employer - are not tested here and are not claimed here.
 - **One corpus**, of 2004 blog text, with self-reported labels.
@@ -201,9 +208,9 @@ it reaches.
 **The gap.** Neither LLM-era result sweeps input size, so neither reports the point on that axis
 where a writer stops being anonymous. And the older length-sweep literature sweeps length against a
 single method, so it cannot see the effect that turns out to dominate: **swap the reader and the
-threshold moves by a factor of sixteen on identical text.** That is what is measured here, with a
-labelled negative control to show a curve cannot rise on its own, and with a second model family to
-check that the number was not a fact about the first one.
+threshold moves by a factor of thirty-two on identical text, among models of one size.** That is
+what is measured here, with a labelled negative control to show a curve cannot rise on its own, and
+with three model families to check that the number is not a fact about any one of them.
 
 The consequence is a claim about the shape of the question rather than about a number. A guideline
 of the form "you are identifiable after N words" is incomplete without naming the reader, and N is
@@ -220,12 +227,13 @@ Symposium on Computational Approaches to Analyzing Weblogs, 2006), available as
 python build_sample.py                              # balanced 72-author sample
 python sweep.py --model qwen2.5:7b-instruct         # resumable, appends to out/
 python sweep.py --model llama3.1:8b
+python sweep.py --model mistral:7b
 python analyze.py out/results-qwen2.5_7b-instruct.jsonl
 python contamination_check.py --model qwen2.5:7b-instruct
 python server.py                                    # then open ?seat=a and ?seat=b
 ```
 
-Raw per-call results for both models are committed under `out/`, so every table in
+Raw per-call results for all three models are committed under `out/`, so every table in
 [`RESULT.md`](RESULT.md) can be regenerated without re-running a single model call.
 
 ## Copyright, citation, and provenance

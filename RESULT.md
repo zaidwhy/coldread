@@ -64,7 +64,7 @@ accrues.
 
 What is measured here is the interaction the older length work holds fixed and the newer capability
 work does not sweep: the same 72 authors and the same slices read by two different models, where the
-threshold moves by a factor of sixteen. The negative control and the second model family are what
+threshold moves by a factor of sixteen (thirty-two with the third family, below). The negative control and the second model family are what
 make that a measurement rather than an anecdote.
 
 ## Caveats
@@ -177,3 +177,61 @@ for N words" is meaningful without naming the model, and N falls as models impro
 models run so far line up suggestively - `qwen2.5:3b` is a constant predictor, `qwen2.5:7b`
 starts anti-correlated and climbs, `llama3.1:8b` is accurate immediately - but family and size
 are confounded across them, so that ladder is a hypothesis and not a result.
+
+## Third model family, same size class (run 2026-09-22, written up 2026-09-27)
+
+The two-model result left a confound: the models differ in family and in size at once. `mistral:7b`
+(a third lab, the same 7-8B class as both earlier models) ran through the identical sample, seed
+(1938), temperature (0) and prompt; `sweep.py` and `build_sample.py` are unchanged since the first
+run, and the 504 (author, words) cells match the other two runs exactly. 504 calls, 0 errors,
+0 unparsed. Reproduce with `python analyze.py out/results-mistral_7b.jsonl`.
+
+| words | gender | age band | sign (control) |
+|---|---|---|---|
+| 25 | 44.4% [0.34, 0.56] | **45.8%** [0.35, 0.57] | 13.9% [0.08, 0.24] |
+| 50 | 55.6% [0.44, 0.66] | 50.0% [0.39, 0.61] | 15.3% [0.09, 0.25] |
+| 100 | 55.6% [0.44, 0.66] | 56.9% [0.45, 0.68] | 16.7% [0.10, 0.27] |
+| 200 | 54.2% [0.43, 0.65] | 58.3% [0.47, 0.69] | 15.3% [0.09, 0.25] |
+| 400 | 59.7% [0.48, 0.70] | 63.9% [0.52, 0.74] | 15.3% [0.09, 0.25] |
+| 800 | 59.7% [0.48, 0.70] | 62.5% [0.51, 0.73] | 12.5% [0.07, 0.22] |
+| 1600 | **63.9%** [0.52, 0.74] | 70.8% [0.59, 0.80] | 13.9% [0.08, 0.24] |
+
+| | qwen2.5:7b-instruct | llama3.1:8b | mistral:7b |
+|---|---|---|---|
+| gender half-life | 800 words | 50 words | 1600 words |
+| gender at 1600 words | 72.2% | 90.3% | 63.9% |
+| age band half-life | 100 words | 25 words | 25 words |
+| age band at 1600 words | 58.3% | 59.7% | 70.8% |
+| star sign (control) | never | never | never |
+
+### What held
+
+- **The control held in all three.** Star sign never cleared its bar. Mistral's point estimate
+  touched 16.7% at 100 words, just above the 15.3% bar, but its lower bound was 0.10; no step in
+  any model has an interval above the bar.
+- **Age clears before gender in all three**, and in Mistral by the widest margin (25 words against 1600).
+- **Reader-dependence is not a size effect.** With size held to one class, family alone moves the
+  gender half-life from 50 to 1600 words, a thirty-two-fold spread on identical text. Size may still
+  matter (the 3B model could not do the task at all), but it cannot explain a spread this wide among
+  models of one size class.
+
+### What did not hold
+
+- **The shared age ceiling.** 58.3% and 59.7% looked like a property of the text. Mistral reaches
+  70.8% [0.59, 0.80] at 1600 words and is still climbing. The intervals overlap Llama's, so this does
+  not prove the ceilings differ, but "age band caps near 60% regardless of the reader" is withdrawn.
+- **One ordering of readers.** Mistral is the slowest reader of gender and tied fastest on age band.
+  Which model "reads better" depends on the attribute, so no single ranking of readers exists either.
+
+### On the below-chance zone
+
+Mistral reads 44.4% on gender at 25 words, the same point estimate as Qwen, then 55.6% at 50. Llama
+never dips. As with Qwen, the interval at 25 words includes 0.50, so "worse than chance" remains
+unestablished for any model; the dip is an observation in two of three families, not a finding.
+
+### Scope
+
+Mistral's gender pass is the narrowest in the study: it clears only at the last step, with a lower
+bound of 0.52, so read its half-life as "about 1600 words or more". Still one corpus, 72 authors,
+demographic attributes only, and one size class; two sizes of one new family would test size
+directly.

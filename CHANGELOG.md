@@ -2,11 +2,12 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
-## Unreleased
+## v1.1.0 - 2026-09-27
 
+- Third model family written up: `mistral:7b` (same 7-8B class, identical sample, seed and prompt) in `RESULT.md`, README, Zenodo description and CITATION. Gender half-life 50 / 800 / 1600 words across the three readers (thirty-two-fold at one size); the shared ~60% age ceiling is withdrawn; the below-chance dip is not supported in any model. Smoke test covers all three result files.
 - Added `docs/ARCHITECTURE.md`, `CONTRIBUTING.md`, issue templates and this changelog.
 - Added `scripts/run_model_sweep.ps1`: unattended pull, sweep, retry of failed rows and analysis for one model, with a status file.
-- Third model family (`mistral:7b`): started 2026-09-21, completed 2026-09-22 (504/504, 0 unparsed; `out/results-mistral_7b.jsonl`, `out/analysis-mistral_7b.txt`). Its result is not yet in `RESULT.md` or the README.
+- Third model family (`mistral:7b`): started 2026-09-21, completed 2026-09-22 (504/504, 0 unparsed; `out/results-mistral_7b.jsonl`, `out/analysis-mistral_7b.txt`). Written up in v1.1.0.
 - Declared dependencies, added an analysis smoke test with CI, vendored the README chart into `docs/`, added `CLAUDE.md` and `AGENTS.md`.
 
 ## v1.0.3 - 2026-09-05

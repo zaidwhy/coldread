@@ -20,6 +20,7 @@ import analyze  # noqa: E402
 RESULTS = {
     "out/results-qwen2.5_7b-instruct.jsonl": {"model": "qwen2.5:7b-instruct", "gender_half_life": 800},
     "out/results-llama3.1_8b.jsonl": {"model": "llama3.1:8b", "gender_half_life": 50},
+    "out/results-mistral_7b.jsonl": {"model": "mistral:7b", "gender_half_life": 1600},
 }
 
 
