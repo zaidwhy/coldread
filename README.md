@@ -175,7 +175,9 @@ asked not to.
 - **Three models of one size class, plus a smaller one that could not do the task at all.** A
   3B model answered the same way on every single call - a constant predictor, not a curve. Holding
   size to the 7-8B class, family alone moves the gender threshold thirty-two-fold, so the spread is
-  not a size effect; whether size matters on top of family needs two sizes of one family.
+  not a size effect. Size matters on top of family as well: inside the llama family, the 3B model
+  never clears gender within 1600 words where the 8B clears at 50 (the two are also one release
+  apart, 3.2 and 3.1).
 - **The third model's gender threshold is the narrowest pass in the study**: it clears only at the
   last slice, so read it as "about sixteen hundred words or more".
 - **Demographic attributes only.** Gender and age band. The more invasive inferences reported

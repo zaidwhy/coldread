@@ -5,7 +5,7 @@ authors:
   - family-names: "Syed"
     given-names: "Zaid Ali"
     orcid: "https://orcid.org/0009-0003-4313-1510"
-version: 1.1.0
+version: 1.2.0
 date-released: 2026-09-27
 url: "https://github.com/zaidwhy/coldread"
 repository-code: "https://github.com/zaidwhy/coldread"
@@ -15,4 +15,5 @@ abstract: >
   Measures how many words a person must write before a language model
   can infer who they are. Finds that the anonymity half-life is a
   property of the reader model, not the text - among three models of
-  one size class, gender needs 50, 800 or 1600 words on the same text.
+  one size class, gender needs 50, 800 or 1600 words on the same text;
+  within one family, the 3B model never clears where the 8B needs 50.

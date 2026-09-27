@@ -236,7 +236,7 @@ bound of 0.52, so read its half-life as "about 1600 words or more". Still one co
 demographic attributes only, and one size class; two sizes of one new family would test size
 directly.
 
-## Two sizes of one family (run 2026-09-27, not yet in the Zenodo record)
+## Two sizes of one family (run 2026-09-27, deposited as v1.2.0)
 
 The third-family section showed that family moves the threshold at one size. This asks the other
 half: inside one family, does size matter? `llama3.2` at 3.2B parameters (Q4_K_M) ran through the

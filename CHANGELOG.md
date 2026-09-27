@@ -2,9 +2,9 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
-## Unreleased
+## v1.2.0 - 2026-09-27
 
-- Two sizes of one family: `llama3.2` (3B) against `llama3.1:8b`, identical protocol; 501/504 rows (3 deterministic timeouts, reported). Gender never clears at 3B (50 words at 8B); age band 100 words (25 at 8B). RESULT.md section, `out/results-llama3.2_latest.jsonl`, `out/analysis-llama3.2_latest.txt`, smoke test (12 passed). Not yet in the Zenodo record.
+- Two sizes of one family: `llama3.2` (3B) against `llama3.1:8b`, identical protocol; 501/504 rows (3 deterministic timeouts, reported). Gender never clears at 3B (50 words at 8B); age band 100 words (25 at 8B). RESULT.md section, `out/results-llama3.2_latest.jsonl`, `out/analysis-llama3.2_latest.txt`, smoke test (12 passed). Deposited as Zenodo v1.2.0.
 - `analyze.py --json`: the same analysis as structured output (per-step hits, totals, accuracy, Wilson bounds, clears-baseline flag, half-lives), so tables can be generated instead of typed. The text report is byte-identical to before; tests check the JSON against the committed results.
 
 ## v1.1.0 - 2026-09-27
