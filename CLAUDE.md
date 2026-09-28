@@ -9,6 +9,7 @@ Doc of record: `RESULT.md` (findings) and `HANDOFF.md` (open work). Read `/resea
 |---|---|
 | Env | global Python 3.12+ is fine; `pip install -r requirements.txt` |
 | Sweep (needs Ollama at 127.0.0.1:11434 with `qwen2.5:7b-instruct` / `llama3.1:8b`) | `python sweep.py --model qwen2.5:7b-instruct` (resumable JSONL in `out/`) |
+| Hosted reader (OpenRouter, e.g. 70B) | `OPENROUTER_API_KEY` in the environment, then `python sweep.py --model meta-llama/llama-3.3-70b-instruct --provider openrouter --max-usd 0.20` (writes `out/results-openrouter-<model>.jsonl`; about $0.044 per full 504-call run at 2026-09-28 prices; hosted output is not bit-for-bit deterministic) |
 | Analyze shipped results | `python analyze.py out/results-qwen2.5_7b-instruct.jsonl` (add `--json` for structured output) |
 | Two-seat live app | `python server.py` then open http://127.0.0.1:8420 |
 | Tests | `pytest -q` (smoke: analysis reproduces the headline numbers from the committed JSONL) |
