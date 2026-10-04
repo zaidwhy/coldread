@@ -86,3 +86,38 @@ def test_analysis_reports_industry_and_keeps_sign_as_the_control(tmp_path):
 def test_profile_files_still_report_gender_age_and_sign():
     a = analyze.analyse(ROOT / "out" / "results-llama3.1_8b.jsonl")
     assert a["attrs"] == ["gender", "age_band", "sign"]
+
+
+def test_industry_ollama_call_caps_output_length_and_the_profile_task_does_not(monkeypatch):
+    sent = []
+
+    class _Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"message": {"content": "{}"}}
+
+    monkeypatch.setattr(sweep.requests, "post", lambda url, json=None, timeout=None: sent.append(json) or _Resp())
+    sweep.ask("m", "text", "1", task="industry")
+    sweep.ask("m", "text", "1")
+    assert sent[0]["options"]["num_predict"] == 200
+    assert "num_predict" not in sent[1]["options"]
+
+
+INDUSTRY_RESULTS = {
+    "out/results-industry-qwen2.5_7b-instruct.jsonl": 50,
+    "out/results-industry-mistral_7b.jsonl": 50,
+    "out/results-industry-llama3.1_8b.jsonl": 25,
+    "out/results-industry-llama3.2_latest.jsonl": 200,
+}
+
+
+def test_shipped_industry_results_reproduce_the_headline_and_the_control_never_clears():
+    for path, expected in INDUSTRY_RESULTS.items():
+        a = analyze.analyse(ROOT / path)
+        assert a["attrs"] == ["industry", "sign"], path
+        assert a["records"] == 504, path
+        assert a["chance"] == {"industry": 0.25, "sign": 0.125}, path
+        assert a["half_life"]["industry"] == expected, path
+        assert a["half_life"]["sign"] is None, path

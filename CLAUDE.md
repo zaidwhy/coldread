@@ -23,7 +23,7 @@ Doc of record: `RESULT.md` (findings) and `HANDOFF.md` (open work). Read `/resea
 
 - `pytest -q` green; if results changed, `RESULT.md` numbers regenerated from `analyze.py` output, never typed by hand.
 - Any new claim has its control in the same table and is run on both model families before it is a headline.
-- Ethics rule holds: no occupation or location attributes; consent gate stays in the live app.
+- Ethics rule holds: the only attributes beyond gender and age band is industry (Zaid approved 2026-10-04, public corpus only, PLAN.md change log); no location, employer or income; the live app never infers industry and its consent gate stays.
 - New deposit to Zenodo only with Zaid's explicit approval (it mints a new DOI version).
 
 ## Gotchas
@@ -31,3 +31,5 @@ Doc of record: `RESULT.md` (findings) and `HANDOFF.md` (open work). Read `/resea
 - Never the em dash character (U+2014); use " - ". Never add Claude/Anthropic attribution anywhere.
 - `out/*.log` are model-pull noise (gitignored); `data/` and root PNGs are gitignored, which is why the app screenshots are untracked - copy any needed screenshot into `docs/`.
 - The README curve SVG is vendored in `docs/` (was loaded from the profile repo before 2026-09-15).
+- Ollama at temperature 0 with a fixed seed is NOT deterministic here: isolated spot checks flip up to about 1 in 5 predictions, a full qwen re-run flipped 5% and a full llama 8B re-run 0% (aggregate hit counts barely move; see RESULT.md step 3). Never write "deterministic" or "identical" about a rerun without measuring it.
+- `sweep.py --task industry` caps output at 200 tokens (`num_predict`) because llama3.2 3B otherwise runs away and burns the 600 s timeout per call. `--out` writes a replicate to a separate file; the resume logic skips rows already in the file, error rows included, so delete error rows before a retry.

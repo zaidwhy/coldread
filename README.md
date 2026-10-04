@@ -180,8 +180,11 @@ asked not to.
   apart, 3.2 and 3.1).
 - **The third model's gender threshold is the narrowest pass in the study**: it clears only at the
   last slice, so read it as "about sixteen hundred words or more".
-- **Demographic attributes only.** Gender and age band. The more invasive inferences reported
-  elsewhere - income, location, employer - are not tested here and are not claimed here.
+- **Gender and age band, plus industry (step 3, run 2026-10-04).** Industry is the one attribute
+  added beyond the demographic pair, on the same public corpus, adults only, with star sign as the
+  control: it clears chance within 25 to 200 words for all four readers and the control stays flat
+  (`RESULT.md`, last section; topic vocabulary is not ruled out as the route). Income, location and
+  employer are not tested here and are not claimed here. The live app does not infer industry.
 - **One corpus**, of 2004 blog text, with self-reported labels.
 
 ## Prior work, and the gap

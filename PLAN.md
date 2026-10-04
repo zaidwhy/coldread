@@ -115,3 +115,19 @@ Written before any industry data exists. The gender and age-band design above is
 - **Half-life:** identical definition, the smallest word count whose Wilson 95% lower bound exceeds the best constant guess.
 - **Readers:** qwen2.5:7b-instruct, llama3.1:8b, mistral:7b, llama3.2 3B (the four already run for gender and age), local, $0. Each is reported on its own; no pooled claim. A headline needs the same direction in both qwen and llama families, per the repo's rule.
 - **Known confounds, stated in advance:** industry is self-reported and noisy; topic words in a blog can name an industry without any stylistic inference (an easier route than gender, which makes this attribute the less clean of the four); the sample is balanced on gender and age band but not on anything else.
+
+### 2026-10-04 (later, mid-run) - output cap for the industry task
+
+Qwen 7B and mistral 7B had finished (504 of 504, no failures). The llama3.2 3B run stalled: 10 of its first 103 calls hit the 600 s read timeout because the model never stops writing (the runaway generation already documented for this model), which would have taken many hours. Changes, made before looking at any llama result and affecting no valid reply (a valid reply is under 60 tokens):
+
+- `sweep.py --task industry` sends `num_predict: 200` to Ollama. The default profile task is unchanged. Qwen and mistral ran before the cap existed; at temperature 0 their valid replies are the same with or without it.
+- The 10 timed-out llama3.2 rows were removed and re-run under the cap. One earlier `unparsed` row (a reply with extra fields) was kept as is.
+- Replies cut off by the cap, or with extra fields instead of the two asked for, are `unparsed`. As in every earlier run they are excluded from accuracy, not scored wrong, and the count is reported next to each curve. Because exclusion shrinks n, a curve with many unparsed rows is read with that n beside it.
+
+### 2026-10-04 (correction) - the cap is not what changes replies; Ollama is not deterministic here
+
+The entry above says qwen and mistral replies are the same with or without the cap. That was asserted, not measured, and it is wrong as stated. Measured afterwards on 24 random calls each: a re-run with the cap differs from the original in 5 of 24 (qwen) and 2 of 24 (mistral) predictions. A re-run of qwen without the cap also differs from the original in 5 of 24, and capped against uncapped re-runs differ in 4 of 24. So the cap is not the cause: at temperature 0 with a fixed seed, Ollama on this machine still flips predictions between identical runs (up to about one in five in these isolated spot checks; see the replicate result below). The "deterministic" wording in this repo's earlier text does not hold for single predictions.
+
+Consequence and plan: the half-lives are properties of one run each. To size the noise, the qwen and llama 8B industry sweeps (the two families the headline rule needs) are re-run in full into `out/replicate-industry-*.jsonl` and the half-lives compared. Whatever that shows is reported next to the original numbers.
+
+Result of the re-runs (full 504-call sweeps, same settings): qwen differs on 25 of 504 industry predictions and reproduces the half-life (50 words) with hit counts identical at six of seven word counts; llama 8B differs on 0 of 504 and reproduces its half-life (25 words) exactly. The sign control stays clean in both. So the flipping seen in isolated spot checks mostly does not survive a full sequential re-run, and varies by reader.

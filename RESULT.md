@@ -76,8 +76,9 @@ make that a measurement rather than an anecdote.
 - **n = 72 authors.** The intervals are wide. Gender at 800 words clears with a lower bound
   of 0.54 against a 0.50 bar, which is a pass but a narrow one. Treat 800 as "somewhere in
   the high hundreds", not as a precise figure.
-- **Demographic attributes only.** Gender and age band. The more invasive inferences in the
-  literature - income, location, employer - are not tested here and must not be claimed.
+- **Demographic attributes, plus industry (step 3, 2026-10-04).** Gender and age band, and
+  since step 3 industry (see the last section). Income, location and employer are still not
+  tested here and must not be claimed.
 - **A 3B model could not do this at all.** `qwen2.5:3b-instruct` answered "male" on 157 of
   157 calls, a constant predictor. Capability appears sharply threshold-dependent on model
   size, so these curves are a property of the model as much as of the text.
@@ -277,3 +278,77 @@ n = 71 and n = 70, and the best constant guess moves slightly (gender 50.3%).
 This is one family at two sizes, and the two are also different releases (3.2 against 3.1), so
 "size" here means size plus one release step. `qwen2.5:3b` could not do the task at all (a constant
 predictor), which fits the same direction but is not a controlled comparison.
+
+## Step 3: industry as a fourth attribute (run 2026-10-04, not yet deposited)
+
+Decision and design are in `PLAN.md` (change log, written before any industry data): the corpus's
+own self-reported industry, adults only (23-47), four industries (Education, Technology, Arts,
+Communications-Media), 18 authors each = 72, balanced on gender and on age band inside every
+industry. Same slices, temperature 0, seed 1938, star sign as the control, the four readers already
+run for gender and age. The best constant guess is 25% for industry and 12.5% for sign. The live app
+is not changed and no per-author output is published.
+
+| Reader | Industry half-life (words) | Industry at 1600 words | Unparsed | Gender half-life (words) |
+|---|---|---|---|---|
+| llama3.1:8b | 25 | 47.2% | 0 / 504 | 50 |
+| qwen2.5:7b-instruct | 50 | 41.7% | 0 / 504 | 800 |
+| mistral:7b | 50 | 51.4% | 0 / 504 | 1600 |
+| llama3.2 3B | 200 | 32.8% (n=61) | 27 / 504 | never |
+
+Reproduce each row with `python analyze.py out/results-industry-<model>.jsonl` (outputs in
+`out/analysis-industry-*.txt`); `tests/test_industry.py` asserts the half-lives and that the control
+never clears.
+
+### What held
+
+- **The control is clean.** Star sign never clears its 12.5% bar at any of the seven word counts for
+  any of the four readers, so the pipeline is not leaking labels. This was the pre-registered gate
+  and it was checked on qwen first.
+- **Industry is inferable from very little text.** All three 7-8B readers clear 25% by 50 words, and
+  the llama 8B already at 25. The pre-registered rule for a headline (same direction in the qwen and
+  llama families) is met.
+- **Accuracy plateaus, it does not climb to certainty.** Best points are 44% (qwen, 400 words), 51%
+  (mistral, 1600) and 50% (llama 8B, 400): about twice chance on a four-way choice, not a reliable
+  classifier. The interval lower bounds sit near 0.3 to 0.4.
+
+### What this does and does not show
+
+- **Different from the gender curve.** Industry clears with far less text than gender did for qwen
+  (50 against 800) and mistral (50 against 1600), and llama 8B is the earliest on both. The readers
+  that were slow on gender are not slow on industry. Caution on the comparison: industry is a four-way
+  choice with a 25% bar, gender a two-way choice with a 50% bar, on a different 72-author sample (adults
+  only), so the half-life numbers are not on one scale. It is a contrast, not a ranking of attributes.
+- **A topic shortcut is not ruled out.** An educator writing about school or a developer writing about
+  code names an industry through vocabulary, with no inference about style. Nothing in this run
+  separates the two routes, so the result says "an industry label is recoverable from a few dozen
+  words of ordinary blog text", not "from how someone writes". Masking topic words is the obvious next
+  test and was not run.
+- **The 3B reader is weak and partly lost.** It clears only at 200 and 400 words (lower bounds 0.26
+  and 0.25, against a 0.25 bar) and falls back below it at 800 and 1600. 27 of 504 replies were
+  unparsed (it adds fields such as age and occupation), which shrinks n to 61-70 at the longer slices.
+  Read its half-life as "weak and unstable", not as 200.
+- **One run, one corpus, n = 72, temperature 0.** Self-reported 2004 blog labels, noisy for industry.
+  No paired test between readers was run.
+
+### Mid-run change, and a determinism correction
+
+Qwen and mistral ran first with no output cap. The llama 3B run stalled on runaway generations (10
+timeouts of 600 s in its first 103 calls), so `sweep.py --task industry` now sends `num_predict: 200`
+(valid replies are under 60 tokens), the timed-out rows were re-run, and the change was logged in
+`PLAN.md` before any llama result was read.
+
+The first version of this note said replies are identical with or without the cap. That was untested and
+wrong. Measured on 24 random calls each, a re-run differs from the original in 5 (qwen) and 2 (mistral)
+predictions, and a re-run without the cap differs just as often, so the cause is not the cap:
+Ollama at temperature 0 with a fixed seed is not fully deterministic on this machine, and isolated
+predictions flip. The local "deterministic" wording elsewhere in this repo should be read as "same
+settings", not "same output".
+
+**How much it matters, measured.** The full qwen and llama 8B industry sweeps were each run a second time
+(`out/replicate-industry-*.jsonl`). Llama 8B reproduced exactly: 0 of 504 predictions differ and the
+half-life is 25 words again. Qwen: 25 of 504 industry predictions differ, but they
+cancel almost exactly. Hit counts are identical at six of seven word counts (the seventh, 1600 words,
+is 30/72 against 31/72), the half-life is 50 words in both runs and the sign control never clears in
+either. So for qwen the run-to-run noise is about one point per curve (none for llama 8B), small against the 25 to 50 point
+gap between industry accuracy and chance, but a half-life that sits one point above the bar (the 3B
+reader) should not be trusted to the word count.

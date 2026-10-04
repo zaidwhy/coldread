@@ -103,20 +103,15 @@ two sizes are also two releases (3.2, 3.1). Still open: step 3.
 - `server.py` / `index.html` - the two-seat app; thresholds are hardcoded
   from the qwen sweep and documented as such in both files.
 
-## PROPOSED decision for step 3 (2026-10-04) - NOT APPROVED, nothing has been run
+## Step 3 (industry): approved and run, 2026-10-04
 
-Zaid asked for step 3 (new attributes). The README, RESULT.md and PLAN.md currently ban occupation, location and employer. Lifting that ban is Zaid's decision. This is the narrowest version Claude can defend; Zaid approves, edits or rejects it here, in writing, before any run.
+Zaid approved the proposal (industry only, existing public corpus, live app unchanged, 4 industries, adults only). Design and decision rules: `PLAN.md` change log (committed before any data). Write-up: last section of `RESULT.md`. Not yet deposited on Zenodo (a v1.3.0 deposit needs Zaid's explicit approval, it mints a DOI).
 
-**Attribute: industry only** (the corpus's own self-reported `topic` field). Not location, not employer, not income. It is the one extra label already in the data, so no new personal data is collected.
+**Result.** Control clean for all four readers. Industry half-life: llama3.1 8B 25 words, qwen 7B 50, mistral 7B 50, llama3.2 3B 200 (weak, 27 of 504 unparsed). Plateau about 42 to 51% against 25% chance. Reproduce: `python analyze.py out/results-industry-<model>.jsonl`; `tests/test_industry.py` asserts it.
 
-**Where it is tested: the existing public corpus only (Blog Authorship Corpus, anonymised ids).** The two-seat live app is NOT extended: its consent gate stays as is, and it will not infer industry for a live person. Per-author outputs are not published; only aggregate curves and the control.
+**Found on the way.** Ollama at temperature 0 with a fixed seed is NOT deterministic here (isolated spot checks flip up to about 1 in 5 predictions, with or without the output cap). Full re-runs: qwen 25 of 504 differ, half-life 50 again, hit counts identical at 6 of 7 word counts; llama 8B 0 of 504 differ, half-life 25 again. See RESULT.md "Mid-run change, and a determinism correction" and the PLAN.md correction entry.
 
-**Design (same pipeline, same prompt shape, same slices 25..1600 words, temperature 0, fixed seed):**
-- Adults only (23-47), so industry is not confounded with the 13-17 band that `Student` fills.
-- Four industries with enough adult authors (Education, Technology, Arts, Communications-Media; each has 435 or more adult authors and at least 174 per gender cell, before the 2,000-word floor), 18 authors each = 72, balanced across gender inside each industry. Chance and best-constant baseline = 25%.
-- Star sign stays as the negative control and must stay flat, or the run is void.
-- Readers: the four already run locally (qwen2.5:7b, llama3.1:8b, mistral:7b, llama3.2 3B). Cost $0.
-- Gate before the full sweep: the control stays flat on the first model, as in PLAN.md. A new PLAN.md change-log entry, dated, before data exists.
-- Reported as a fourth attribute with its own curve; the "demographic attributes only" lines in README and RESULT.md are rewritten to say exactly what was added and why, not deleted.
-
-**Open for Zaid:** (1) approve industry as the one added attribute, or name another; (2) confirm no live-app extension; (3) confirm the 4-industry, adults-only sample.
+**Open.**
+- Topic-word masking (is the route vocabulary or style?) was not run. It is the obvious next test.
+- Zenodo v1.3.0 deposit: Zaid's call.
+- Run notes: llama3.1:8b and qwen2.5:7b-instruct were re-pulled on 2026-10-04 (they had been removed); `out/*.log` is gitignored.

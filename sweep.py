@@ -121,6 +121,10 @@ def ask(model, text, author_id="", timeout=600, task="profile"):
         "format": "json",
         "options": {"temperature": 0, "seed": SEED},
     }
+    if task == "industry":
+        # A valid reply is under 60 tokens. The 3B reader sometimes never stops writing, and each
+        # such call otherwise burns the full 600 s timeout. Added 2026-10-04 mid-run; see PLAN.md.
+        body["options"]["num_predict"] = 200
     r = requests.post(ENDPOINT, json=body, timeout=timeout)
     r.raise_for_status()
     return r.json()["message"]["content"]
