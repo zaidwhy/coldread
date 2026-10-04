@@ -100,3 +100,18 @@ becomes the harm.
 - `analyze.py` - accuracy curves, Wilson intervals, half-life, control check
 - `data/` - corpus and sample (gitignored, 763MB)
 - `out/` - results as JSONL
+
+## Change log
+
+### 2026-10-04 - step 3: industry added as a fourth attribute (Zaid approved the decision in HANDOFF.md)
+
+Written before any industry data exists. The gender and age-band design above is unchanged and its results are not re-derived.
+
+- **Attribute:** industry, the corpus's own self-reported `topic` field. Location, employer and income stay out of scope. The two-seat live app is not extended; it still profiles nobody but consenting seats. Per-author outputs are not published.
+- **Sample (`data/sample_industry.json`):** adults only (ages 23-47), four industries (Education, Technology, Arts, Communications-Media), 18 authors each = 72, balanced on gender (9/9) and on age band (23-27, 33-47; 9/9) inside each industry, at least 2,000 words each, seed 1938. Best constant guess = 25%.
+- **Sweep:** same slices (25 to 1,600 words), temperature 0, seed 1938, option order counterbalanced per author. Each reply names industry and star sign (gender and age band are not asked; every author is an adult).
+- **Control:** star sign, same rule as above. Best constant guess is computed from the sample.
+- **Gate, before the full sweep:** on qwen2.5:7b-instruct the sign control must not clear its best constant guess at any step. If it does, the pipeline is fixed before anything is believed. Industry clearing or not is not a gate: a flat industry curve is reported as a result.
+- **Half-life:** identical definition, the smallest word count whose Wilson 95% lower bound exceeds the best constant guess.
+- **Readers:** qwen2.5:7b-instruct, llama3.1:8b, mistral:7b, llama3.2 3B (the four already run for gender and age), local, $0. Each is reported on its own; no pooled claim. A headline needs the same direction in both qwen and llama families, per the repo's rule.
+- **Known confounds, stated in advance:** industry is self-reported and noisy; topic words in a blog can name an industry without any stylistic inference (an easier route than gender, which makes this attribute the less clean of the four); the sample is balanced on gender and age band but not on anything else.

@@ -9,6 +9,9 @@ Resumable: results are appended to out/results.jsonl and completed
 (author, word count) pairs are skipped on a re-run.
 
 Usage: python sweep.py --model qwen2.5:3b-instruct
+
+`--task industry` runs step 3 (PLAN.md change log, 2026-10-04) on data/sample_industry.json:
+the model names the author's industry and star sign (the control), nothing else.
 """
 
 import argparse
@@ -22,6 +25,7 @@ import requests
 
 ROOT = Path(__file__).parent
 SAMPLE = ROOT / "data" / "sample.json"
+SAMPLE_INDUSTRY = ROOT / "data" / "sample_industry.json"
 OUTDIR = ROOT / "out"
 
 # localhost resolves IPv6 first on this machine and hangs to timeout.
@@ -56,6 +60,15 @@ Infer the author. Reply with exactly this JSON and nothing else:
 GENDERS = ["male", "female"]
 BANDS = ["13-17", "23-27", "33-47"]
 
+INDUSTRIES = ["Education", "Technology", "Arts", "Communications-Media"]
+PROMPT_INDUSTRY = """Writing sample:
+\"\"\"
+{text}
+\"\"\"
+
+Infer the author. Reply with exactly this JSON and nothing else:
+{{"industry": {industries}, "sign": one of {signs}}}"""
+
 
 def option_order(author_id, options):
     """Counterbalance the order options are listed in.
@@ -81,7 +94,13 @@ def parse_reply(raw):
     return obj if isinstance(obj, dict) else None
 
 
-def build_prompt(text, author_id=""):
+def build_prompt(text, author_id="", task="profile"):
+    if task == "industry":
+        return PROMPT_INDUSTRY.format(
+            text=text,
+            industries=" or ".join(f'"{i}"' for i in option_order(author_id, INDUSTRIES)),
+            signs=", ".join(option_order(author_id, SIGNS)),
+        )
     return PROMPT.format(
         text=text,
         genders=" or ".join(f'"{g}"' for g in option_order(author_id, GENDERS)),
@@ -90,8 +109,8 @@ def build_prompt(text, author_id=""):
     )
 
 
-def ask(model, text, author_id="", timeout=600):
-    prompt = build_prompt(text, author_id)
+def ask(model, text, author_id="", timeout=600, task="profile"):
+    prompt = build_prompt(text, author_id, task)
     body = {
         "model": model,
         "messages": [
@@ -107,7 +126,7 @@ def ask(model, text, author_id="", timeout=600):
     return r.json()["message"]["content"]
 
 
-def ask_openrouter(model, text, author_id="", timeout=120):
+def ask_openrouter(model, text, author_id="", timeout=120, task="profile"):
     """Same question through OpenRouter. Returns (reply, cost_usd) using the cost OpenRouter reports."""
     key = os.environ.get("OPENROUTER_API_KEY", "")
     if not key:
@@ -116,7 +135,7 @@ def ask_openrouter(model, text, author_id="", timeout=120):
         "model": model,
         "messages": [
             {"role": "system", "content": SYSTEM},
-            {"role": "user", "content": build_prompt(text, author_id)},
+            {"role": "user", "content": build_prompt(text, author_id, task)},
         ],
         "temperature": 0,
         "seed": SEED,
@@ -135,6 +154,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--task", choices=["profile", "industry"], default="profile",
+                    help="profile: gender, age band, sign (default). industry: industry and sign (step 3)")
     ap.add_argument("--provider", choices=["ollama", "openrouter"], default="ollama")
     ap.add_argument("--max-usd", type=float, default=None,
                     help="openrouter only: stop before total reported cost passes this (set it under the key's limit)")
@@ -142,11 +163,12 @@ def main():
 
     OUTDIR.mkdir(exist_ok=True)
     slug = args.model.replace(":", "_").replace("/", "_")
-    default = f"results-openrouter-{slug}.jsonl" if args.provider == "openrouter" else f"results-{slug}.jsonl"
+    prefix = "results-industry" if args.task == "industry" else "results"
+    default = f"{prefix}-openrouter-{slug}.jsonl" if args.provider == "openrouter" else f"{prefix}-{slug}.jsonl"
     outfile = Path(args.out) if args.out else OUTDIR / default
     spent = 0.0
 
-    authors = json.loads(SAMPLE.read_text(encoding="utf-8"))
+    authors = json.loads((SAMPLE_INDUSTRY if args.task == "industry" else SAMPLE).read_text(encoding="utf-8"))
 
     done = set()
     if outfile.exists():
@@ -174,10 +196,10 @@ def main():
                 break
             try:
                 if args.provider == "openrouter":
-                    raw, cost = ask_openrouter(args.model, snippet, author_id=author["author_id"])
+                    raw, cost = ask_openrouter(args.model, snippet, author_id=author["author_id"], task=args.task)
                     spent += cost
                 else:
-                    raw = ask(args.model, snippet, author_id=author["author_id"])
+                    raw = ask(args.model, snippet, author_id=author["author_id"], task=args.task)
                 pred = parse_reply(raw)
                 err = None if pred else f"unparsed: {raw[:200]}"
             except Exception as exc:
@@ -188,11 +210,15 @@ def main():
                 "n_words": n,
                 "model": args.model,
                 **({"provider": "openrouter"} if args.provider == "openrouter" else {}),
-                "truth": {
-                    "gender": author["gender"].lower(),
-                    "age_band": author["age_band"],
-                    "sign": author["sign"],
-                },
+                "truth": (
+                    {"industry": author["topic"], "sign": author["sign"]}
+                    if args.task == "industry"
+                    else {
+                        "gender": author["gender"].lower(),
+                        "age_band": author["age_band"],
+                        "sign": author["sign"],
+                    }
+                ),
                 "pred": pred,
                 "error": err,
             }

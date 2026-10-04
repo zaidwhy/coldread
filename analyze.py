@@ -15,9 +15,20 @@ from collections import defaultdict
 from pathlib import Path
 
 ATTRS = ["gender", "age_band", "sign"]
+# Step 3 adds industry (PLAN.md change log, 2026-10-04). A results file is analysed on the
+# attributes its records carry; sign is always the control and is always last.
+KNOWN_ATTRS = ["gender", "age_band", "industry", "sign"]
 
 
-def baselines(rows):
+def attrs_in(rows):
+    """The attributes present in these records, in KNOWN_ATTRS order."""
+    seen = set()
+    for r in rows:
+        seen.update(r.get("truth", {}))
+    return [a for a in KNOWN_ATTRS if a in seen] or ATTRS
+
+
+def baselines(rows, attrs=ATTRS):
     """The bar to beat is the best constant guess, not 1/k.
 
     The sample is balanced on gender and age band so those come out at 1/2 and
@@ -25,7 +36,7 @@ def baselines(rows):
     sign scores well above 1/12, and the control has to survive that.
     """
     out = {}
-    for attr in ATTRS:
+    for attr in attrs:
         counts = defaultdict(int)
         for r in rows:
             truth = norm(attr, r["truth"].get(attr))
@@ -59,7 +70,8 @@ def norm(attr, value):
 def analyse(path):
     """Everything the report shows, as data: per-step accuracy with Wilson bounds, and the half-lives."""
     rows = [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
-    CHANCE = baselines(rows)
+    attrs = attrs_in(rows)
+    CHANCE = baselines(rows, attrs)
 
     tally = defaultdict(lambda: defaultdict(lambda: [0, 0]))  # attr -> n_words -> [hits, total]
     unparsed = 0
@@ -67,7 +79,7 @@ def analyse(path):
         if not r.get("pred"):
             unparsed += 1
             continue
-        for attr in ATTRS:
+        for attr in attrs:
             truth = norm(attr, r["truth"].get(attr))
             pred = norm(attr, r["pred"].get(attr))
             if truth is None:
@@ -83,15 +95,16 @@ def analyse(path):
              and wilson(*tally[attr][n])[0] > CHANCE[attr]),
             None,
         )
-        for attr in ATTRS
+        for attr in attrs
     }
     cells = {}
     for n in steps:
-        for attr in ATTRS:
+        for attr in attrs:
             hits, total = tally[attr].get(n, [0, 0])
             lo, hi = wilson(hits, total)
             cells[(n, attr)] = {"hits": hits, "total": total, "lo": lo, "hi": hi, "clears": total > 0 and lo > CHANCE[attr]}
     return {
+        "attrs": attrs,
         "model": rows[0]["model"] if rows else "?",
         "records": len(rows),
         "unparsed": unparsed,
@@ -119,7 +132,7 @@ def as_json(a):
                         "wilson_95": [round(c["lo"], 6), round(c["hi"], 6)],
                         "clears_best_constant_guess": c["clears"],
                     }
-                    for attr in ATTRS
+                    for attr in a["attrs"]
                     for c in [a["cells"][(n, attr)]]
                 },
             }
@@ -135,17 +148,18 @@ def main(path, emit_json=False):
         print(json.dumps(as_json(a), indent=2))
         return
     CHANCE = a["chance"]
+    attrs = a["attrs"]
 
     print(f"model: {a['model']}   records: {a['records']}   unparsed: {a['unparsed']}\n")
 
     lines = []
-    header = f"| {'words':>6} | " + " | ".join(f"{x:^22}" for x in ATTRS) + " |"
+    header = f"| {'words':>6} | " + " | ".join(f"{x:^22}" for x in attrs) + " |"
     lines.append(header)
-    lines.append("|" + "-" * 8 + "|" + "|".join(["-" * 24] * len(ATTRS)) + "|")
+    lines.append("|" + "-" * 8 + "|" + "|".join(["-" * 24] * len(attrs)) + "|")
 
     for n in a["steps"]:
         row = []
-        for attr in ATTRS:
+        for attr in attrs:
             c = a["cells"][(n, attr)]
             if c["total"] == 0:
                 row.append(f"{'-':^22}")
@@ -155,10 +169,10 @@ def main(path, emit_json=False):
         lines.append(f"| {n:>6} | " + " | ".join(row) + " |")
 
     print("\n".join(lines))
-    print("\nbest constant guess: " + ", ".join(f"{x}={CHANCE[x]:.1%}" for x in ATTRS))
+    print("\nbest constant guess: " + ", ".join(f"{x}={CHANCE[x]:.1%}" for x in attrs))
     print("* = 95% lower bound clears the best constant guess\n")
 
-    for attr in ATTRS:
+    for attr in attrs:
         crossing = a["half_life"][attr]
         label = " (CONTROL - should be None)" if attr == "sign" else ""
         print(f"half-life {attr:9}: {crossing if crossing else 'never'} words{label}")

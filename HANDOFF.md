@@ -102,3 +102,21 @@ two sizes are also two releases (3.2, 3.1). Still open: step 3.
 - `README.md` - the public write-up, now current.
 - `server.py` / `index.html` - the two-seat app; thresholds are hardcoded
   from the qwen sweep and documented as such in both files.
+
+## PROPOSED decision for step 3 (2026-10-04) - NOT APPROVED, nothing has been run
+
+Zaid asked for step 3 (new attributes). The README, RESULT.md and PLAN.md currently ban occupation, location and employer. Lifting that ban is Zaid's decision. This is the narrowest version Claude can defend; Zaid approves, edits or rejects it here, in writing, before any run.
+
+**Attribute: industry only** (the corpus's own self-reported `topic` field). Not location, not employer, not income. It is the one extra label already in the data, so no new personal data is collected.
+
+**Where it is tested: the existing public corpus only (Blog Authorship Corpus, anonymised ids).** The two-seat live app is NOT extended: its consent gate stays as is, and it will not infer industry for a live person. Per-author outputs are not published; only aggregate curves and the control.
+
+**Design (same pipeline, same prompt shape, same slices 25..1600 words, temperature 0, fixed seed):**
+- Adults only (23-47), so industry is not confounded with the 13-17 band that `Student` fills.
+- Four industries with enough adult authors (Education, Technology, Arts, Communications-Media; each has 435 or more adult authors and at least 174 per gender cell, before the 2,000-word floor), 18 authors each = 72, balanced across gender inside each industry. Chance and best-constant baseline = 25%.
+- Star sign stays as the negative control and must stay flat, or the run is void.
+- Readers: the four already run locally (qwen2.5:7b, llama3.1:8b, mistral:7b, llama3.2 3B). Cost $0.
+- Gate before the full sweep: the control stays flat on the first model, as in PLAN.md. A new PLAN.md change-log entry, dated, before data exists.
+- Reported as a fourth attribute with its own curve; the "demographic attributes only" lines in README and RESULT.md are rewritten to say exactly what was added and why, not deleted.
+
+**Open for Zaid:** (1) approve industry as the one added attribute, or name another; (2) confirm no live-app extension; (3) confirm the 4-industry, adults-only sample.
