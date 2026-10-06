@@ -279,7 +279,7 @@ This is one family at two sizes, and the two are also different releases (3.2 ag
 "size" here means size plus one release step. `qwen2.5:3b` could not do the task at all (a constant
 predictor), which fits the same direction but is not a controlled comparison.
 
-## Step 3: industry as a fourth attribute (run 2026-10-04, not yet deposited)
+## Step 3: industry as a fourth attribute (run 2026-10-04, deposited as v1.3.0)
 
 Decision and design are in `PLAN.md` (change log, written before any industry data): the corpus's
 own self-reported industry, adults only (23-47), four industries (Education, Technology, Arts,

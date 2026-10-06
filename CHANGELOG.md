@@ -2,6 +2,13 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## v1.3.0 - 2026-10-06
+
+- Step 3, industry as a fourth attribute (adults only, four industries, 72 authors, 25% constant guess), run on the same four readers with star sign as the control. Half-lives 25 (llama3.1:8b), 50 (qwen2.5:7b), 50 (mistral:7b), 200 (llama3.2 3B, weak, 27 of 504 unparsed); plateau about 42 to 51%; control clean for all four. Written into RESULT.md, README, CITATION and the Zenodo description. Pre-registration in `PLAN.md`; `tests/test_industry.py`.
+- Determinism correction: Ollama at temperature 0 with a fixed seed is not fully deterministic here. Full re-runs reproduced the half-lives (qwen 25 of 504 predictions differ, llama 8B 0).
+- `sweep.py --provider openrouter` for hosted readers, with a spend cap.
+- Pre-registered for later, not part of this deposit: the topic-word masking test (`PLAN.md` step 3b, `topicmask.py`, `sweep.py --mask-topic`). Its results are not in this version.
+
 ## v1.2.0 - 2026-09-27
 
 - Two sizes of one family: `llama3.2` (3B) against `llama3.1:8b`, identical protocol; 501/504 rows (3 deterministic timeouts, reported). Gender never clears at 3B (50 words at 8B); age band 100 words (25 at 8B). RESULT.md section, `out/results-llama3.2_latest.jsonl`, `out/analysis-llama3.2_latest.txt`, smoke test (12 passed). Deposited as Zenodo v1.2.0.
