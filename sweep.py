@@ -23,6 +23,8 @@ from pathlib import Path
 
 import requests
 
+from topicmask import mask_words
+
 ROOT = Path(__file__).parent
 SAMPLE = ROOT / "data" / "sample.json"
 SAMPLE_INDUSTRY = ROOT / "data" / "sample_industry.json"
@@ -160,6 +162,9 @@ def main():
     ap.add_argument("--out", default=None)
     ap.add_argument("--task", choices=["profile", "industry"], default="profile",
                     help="profile: gender, age band, sign (default). industry: industry and sign (step 3)")
+    ap.add_argument("--mask-topic", action="store_true",
+                    help="industry task only: mask every word in the topicmask.py lexicon (all four industries) "
+                         "in each snippet, after slicing, so slice lengths match the unmasked sweep")
     ap.add_argument("--provider", choices=["ollama", "openrouter"], default="ollama")
     ap.add_argument("--max-usd", type=float, default=None,
                     help="openrouter only: stop before total reported cost passes this (set it under the key's limit)")
@@ -167,7 +172,9 @@ def main():
 
     OUTDIR.mkdir(exist_ok=True)
     slug = args.model.replace(":", "_").replace("/", "_")
-    prefix = "results-industry" if args.task == "industry" else "results"
+    if args.mask_topic and args.task != "industry":
+        ap.error("--mask-topic only applies to --task industry")
+    prefix = "results-industry-masked" if args.mask_topic else ("results-industry" if args.task == "industry" else "results")
     default = f"{prefix}-openrouter-{slug}.jsonl" if args.provider == "openrouter" else f"{prefix}-{slug}.jsonl"
     outfile = Path(args.out) if args.out else OUTDIR / default
     spent = 0.0
@@ -193,6 +200,9 @@ def main():
             # duplicate of the previous step, flattening the curve. Skip instead.
             if len(words) < n:
                 continue
+            n_masked = 0
+            if args.mask_topic:
+                words, n_masked = mask_words(words)
             snippet = " ".join(words)
 
             if args.max_usd is not None and spent >= args.max_usd:
@@ -225,6 +235,7 @@ def main():
                 ),
                 "pred": pred,
                 "error": err,
+                **({"n_masked": n_masked} if args.mask_topic else {}),
             }
             fh.write(json.dumps(rec) + "\n")
             fh.flush()
