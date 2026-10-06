@@ -2,6 +2,10 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## Unreleased
+
+- Step 3b, topic-word masking (pre-registered in PLAN.md before any masked result): with the industry-word lexicon masked, llama3.1:8b half-life 25 to 50 words and qwen2.5:7b 50 to 100, plateaus within 5 points, control clean; case (a) of the pre-registered rule in both families. RESULT.md, `out/results-industry-masked-*.jsonl`, test. Not yet deposited.
+
 ## v1.3.0 - 2026-10-06
 
 - Step 3, industry as a fourth attribute (adults only, four industries, 72 authors, 25% constant guess), run on the same four readers with star sign as the control. Half-lives 25 (llama3.1:8b), 50 (qwen2.5:7b), 50 (mistral:7b), 200 (llama3.2 3B, weak, 27 of 504 unparsed); plateau about 42 to 51%; control clean for all four. Written into RESULT.md, README, CITATION and the Zenodo description. Pre-registration in `PLAN.md`; `tests/test_industry.py`.

@@ -121,3 +121,17 @@ def test_shipped_industry_results_reproduce_the_headline_and_the_control_never_c
         assert a["chance"] == {"industry": 0.25, "sign": 0.125}, path
         assert a["half_life"]["industry"] == expected, path
         assert a["half_life"]["sign"] is None, path
+
+
+MASKED_RESULTS = {
+    "out/results-industry-masked-qwen2.5_7b-instruct.jsonl": 100,
+    "out/results-industry-masked-llama3.1_8b.jsonl": 50,
+}
+
+
+def test_shipped_masked_industry_results_reproduce_and_the_control_never_clears():
+    for path, expected in MASKED_RESULTS.items():
+        a = analyze.analyse(ROOT / path)
+        assert a["records"] == 504, path
+        assert a["half_life"]["industry"] == expected, path
+        assert a["half_life"]["sign"] is None, path

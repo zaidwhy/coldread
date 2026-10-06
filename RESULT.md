@@ -352,3 +352,22 @@ is 30/72 against 31/72), the half-life is 50 words in both runs and the sign con
 either. So for qwen the run-to-run noise is about one point per curve (none for llama 8B), small against the 25 to 50 point
 gap between industry accuracy and chance, but a half-life that sits one point above the bar (the 3B
 reader) should not be trusted to the word count.
+
+## Step 3b: topic-word masking (run 2026-10-06, rule fixed in PLAN.md before any masked result)
+
+The question left open above: is industry recoverable because the text names the industry, or from something less obvious? The word list (`topicmask.py`, four industry lists, about 150 stems, all four masked in every snippet whatever the author's label) and the decision rule were committed before the first masked call. Slices are cut first, then masked words become `[...]` and still count toward the word total; 1.6% of the words in the first 1,600 words of the 72 authors are masked. Same readers' prompt, temperature 0, seed 1938, `num_predict` 200. Only the two families the headline rule needs were run.
+
+| Reader | Half-life, unmasked | Half-life, masked | Industry at 1600 words, unmasked | masked | Best point, unmasked | masked | Unparsed |
+|---|---|---|---|---|---|---|---|
+| llama3.1:8b | 25 | 50 | 47.2% | 47.2% | 50.0% (400) | 50.0% (400) | 0 / 504 |
+| qwen2.5:7b-instruct | 50 | 100 | 41.7% | 37.5% | 44.4% (400) | 38.9% (400, 800) | 0 / 504 |
+
+Reproduce with `python analyze.py out/results-industry-masked-<model>.jsonl` (outputs in `out/analysis-industry-masked-*.txt`); `tests/test_industry.py` asserts the half-lives and that the control never clears.
+
+**Verdict under the pre-registered rule: case (a) for both readers.** Each masked half-life is exactly twice the unmasked one (no more than 2x), and the plateau stays within 10 points (llama: identical, qwen: 4 to 5 points lower). The star-sign control never clears its 12.5% bar in either run. Case (a) in both families meets the rule's condition for the claim that the listed industry words are not what carries the signal.
+
+**What this does and does not show.**
+- Removing about 1.6% of words (the ones that name an industry in the lexicon) delays the half-life by one word-count step and costs qwen a few points of plateau; it does not remove the signal. The industry result is therefore not explained by those listed words alone.
+- It does not show that no topical content is used. The lexicon is a coarse hand list, not exhaustive. Places, products, slang and jargon outside it can still point to an industry, so "survives masking" means "the listed words are not required", not "style alone".
+- The doubling at both readers is at the resolution of the word-count grid (each step doubles), so it is one grid step, not a measured effect size. One run per reader, n = 72, temperature 0, and Ollama is not fully deterministic here (see the correction above), so a half-life one step either way should not be over-read.
+- Mistral and the 3B reader were not masked.

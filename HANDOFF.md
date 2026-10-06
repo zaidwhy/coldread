@@ -116,6 +116,8 @@ Zaid approved the proposal (industry only, existing public corpus, live app unch
 - Zenodo v1.3.0 deposit: Zaid's call.
 - Run notes: llama3.1:8b and qwen2.5:7b-instruct were re-pulled on 2026-10-04 (they had been removed); `out/*.log` is gitignored.
 
-## Step 3b (topic-word masking), 2026-10-06: pre-registered and running
+## Step 3b (topic-word masking), 2026-10-06: DONE, case (a) in both families, written into RESULT.md, NOT deposited (a v1.4.0 deposit is Zaid's call)
+
+(Original note, kept for the record:)
 
 Pre-registration, lexicon (`topicmask.py`) and decision rule are in PLAN.md (change log 2026-10-06), pushed before any masked result. `python sweep.py --model <m> --task industry --mask-topic` writes `out/results-industry-masked-<m>.jsonl`. Readers: llama3.1:8b then qwen2.5:7b-instruct (`out/chain-masked.sh` starts qwen after llama). When both reach 504 rows: run `python analyze.py` on each, apply the PLAN.md rule (a/b/c) without changing it, write RESULT.md, then a v1.3.1 or v1.4.0 deposit only on Zaid's go.
