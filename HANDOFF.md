@@ -105,7 +105,7 @@ two sizes are also two releases (3.2, 3.1). Still open: step 3.
 
 ## Step 3 (industry): approved and run, 2026-10-04
 
-Zaid approved the proposal (industry only, existing public corpus, live app unchanged, 4 industries, adults only). Design and decision rules: `PLAN.md` change log (committed before any data). Write-up: last section of `RESULT.md`. Not yet deposited on Zenodo (a v1.3.0 deposit needs Zaid's explicit approval, it mints a DOI).
+Zaid approved the proposal (industry only, existing public corpus, live app unchanged, 4 industries, adults only). Design and decision rules: `PLAN.md` change log (committed before any data). Write-up: last section of `RESULT.md`. Deposited 2026-10-06 as v1.3.0 on Zaid's go: 10.5281/zenodo.23189074 (GitHub release -> Zenodo webhook; concept DOI 10.5281/zenodo.22309660 resolves to it). The masking test is NOT in that deposit.
 
 **Result.** Control clean for all four readers. Industry half-life: llama3.1 8B 25 words, qwen 7B 50, mistral 7B 50, llama3.2 3B 200 (weak, 27 of 504 unparsed). Plateau about 42 to 51% against 25% chance. Reproduce: `python analyze.py out/results-industry-<model>.jsonl`; `tests/test_industry.py` asserts it.
 
@@ -115,3 +115,7 @@ Zaid approved the proposal (industry only, existing public corpus, live app unch
 - Topic-word masking (is the route vocabulary or style?) was not run. It is the obvious next test.
 - Zenodo v1.3.0 deposit: Zaid's call.
 - Run notes: llama3.1:8b and qwen2.5:7b-instruct were re-pulled on 2026-10-04 (they had been removed); `out/*.log` is gitignored.
+
+## Step 3b (topic-word masking), 2026-10-06: pre-registered and running
+
+Pre-registration, lexicon (`topicmask.py`) and decision rule are in PLAN.md (change log 2026-10-06), pushed before any masked result. `python sweep.py --model <m> --task industry --mask-topic` writes `out/results-industry-masked-<m>.jsonl`. Readers: llama3.1:8b then qwen2.5:7b-instruct (`out/chain-masked.sh` starts qwen after llama). When both reach 504 rows: run `python analyze.py` on each, apply the PLAN.md rule (a/b/c) without changing it, write RESULT.md, then a v1.3.1 or v1.4.0 deposit only on Zaid's go.
