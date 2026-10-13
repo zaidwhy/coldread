@@ -9,3 +9,4 @@ out/archive/
 *.png
 !docs/screenshot.png
 .playwright-mcp/
+.env
