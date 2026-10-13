@@ -183,7 +183,10 @@ asked not to.
 - **Gender and age band, plus industry (step 3, run 2026-10-04).** Industry is the one attribute
   added beyond the demographic pair, on the same public corpus, adults only, with star sign as the
   control: it clears chance within 25 to 200 words for all four readers and the control stays flat
-  (`RESULT.md`, last section; topic vocabulary is not ruled out as the route). Income, location and
+  (`RESULT.md`, last two sections). Masking the listed industry words (about 1.6% of words) delays
+  the half-life by one grid step for the two readers tested (25 to 50 words, 50 to 100) and leaves
+  the plateau within 5 points, so those words are not required; a coarse word list does not rule
+  out other topical cues, so "style alone" is not claimed. Income, location and
   employer are not tested here and are not claimed here. The live app does not infer industry.
 - **One corpus**, of 2004 blog text, with self-reported labels.
 
