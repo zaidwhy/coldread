@@ -121,3 +121,8 @@ Zaid approved the proposal (industry only, existing public corpus, live app unch
 (Original note, kept for the record:)
 
 Pre-registration, lexicon (`topicmask.py`) and decision rule are in PLAN.md (change log 2026-10-06), pushed before any masked result. `python sweep.py --model <m> --task industry --mask-topic` writes `out/results-industry-masked-<m>.jsonl`. Readers: llama3.1:8b then qwen2.5:7b-instruct (`out/chain-masked.sh` starts qwen after llama). When both reach 504 rows: run `python analyze.py` on each, apply the PLAN.md rule (a/b/c) without changing it, write RESULT.md, then a v1.3.1 or v1.4.0 deposit only on Zaid's go.
+
+## v1.4.0 released 2026-10-14 (step 3b masking deposited)
+
+Zaid approved the deposit. README, CHANGELOG, CITATION.cff (version 1.4.0, date 2026-10-14) and `.zenodo.json` now state the step 3b result and its limits; numbers were re-derived with `analyze.py` first. Signed tag v1.4.0, GitHub release created, Zenodo webhook accepted it. Version DOI **10.5281/zenodo.23349608** (concept DOI 10.5281/zenodo.22309660 resolves to it). Mistral and the 3B reader were not masked; that remains the only open extension and is not planned under closure mode.
+
