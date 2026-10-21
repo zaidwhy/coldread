@@ -29,12 +29,27 @@ counts that matter most.
 Then I ran the identical text, the identical prompt, and the identical seed through two more
 models from two other labs, all three in the same size class.
 
-**The line moved by a factor of thirty-two.**
+**The line moved by a factor of thirty-two** (on a doubling grid, so read it as somewhere between
+16x and 64x; the next section says exactly what "line" means here).
 
 One model is past a coin flip on gender almost immediately, and by the end of the passage it is
 right nine times out of ten. Another needs the better part of a thousand words. The third needs
-the whole sixteen hundred. Same authors. Same words. Same question. Same size of model. The only
-thing that changed was who was reading.
+the whole sixteen hundred. Same authors. Same words. Same question. Models of one size class (7.2B, 7.6B and 8.0B
+parameters, all Q4_K_M via Ollama; see "What this is not"). The only thing that changed was who
+was reading.
+
+## What "half-life" means here
+
+It is not a decay point. In the code (`analyze.py`, the `half_life` expression) it is the first
+cell of a doubling word-count grid (25, 50, 100, 200, 400, 800, 1600) at which the Wilson 95 percent
+lower bound of the reader's accuracy is above the bar, the best constant guess. There is no
+interpolation and no curve fit. The grid has 2x resolution, so "32x" is the ratio of two grid cells
+and means between 16x and 64x. The slowest endpoint is thin: mistral's 1600-word gender crossing is
+46 of 72 with a lower bound of 0.5235 against a bar of 0.50, two hits above the bar (44 of 72 would
+give 0.4956 and the half-life would be "never"). The seven grid steps are seven comparisons per
+curve and are uncorrected for multiplicity: under the null a curve could clear somewhere by chance
+with probability near 16 percent, so a single half-life can move one grid cell by chance. No paired
+test between readers was run.
 
 ## The finding
 
@@ -55,7 +70,11 @@ The load-bearing piece of this experiment is the attribute that cannot possibly 
 
 Alongside gender and age, the model was asked for each author's star sign. Star sign is
 labelled in the corpus and it is not inferable from writing - there is no causal path from
-being a Capricorn to how you punctuate. It went through the identical pipeline as the other
+being a Capricorn to how you punctuate. It is not perfectly absent from the text, though: in the
+first 1600 words, 6 of 72 authors mention star-sign or birthday terms (one writes their own sign).
+The topic-word masking in step 3b masks an industry lexicon only, not these terms, so nothing was
+done about them. The control never cleared, so it did no harm here, but the control is "not
+inferable from style", not "never stated". It went through the identical pipeline as the other
 two attributes: same prompt, same slices, same scoring.
 
 It never left the floor. Not once, at any word count, in any of the three models.
@@ -172,7 +191,11 @@ asked not to.
 
 - **Seventy-two authors.** The intervals are wide. The gender threshold should be read as
   "somewhere in the high hundreds of words", not as a precise figure.
-- **Three models of one size class, plus a smaller one that could not do the task at all.** A
+- **Three models of one size class, plus a smaller one that could not do the task at all.** The
+  three are not identical in size: `qwen2.5:7b-instruct` is 7.6B, `llama3.1:8b` is 8.0B and
+  `mistral:7b` is 7.2B parameters (3B reader: `llama3.2` at 3.2B), all Q4_K_M via Ollama. A 7.2B to
+  8.0B span supports "same size class", not "same size". Weights at another precision would be a
+  different protocol. A
   3B model answered the same way on every single call - a constant predictor, not a curve. Holding
   size to the 7-8B class, family alone moves the gender threshold thirty-two-fold, so the spread is
   not a size effect. Size matters on top of family as well: inside the llama family, the 3B model
@@ -183,9 +206,12 @@ asked not to.
 - **Gender and age band, plus industry (step 3, run 2026-10-04).** Industry is the one attribute
   added beyond the demographic pair, on the same public corpus, adults only, with star sign as the
   control: it clears chance within 25 to 200 words for all four readers and the control stays flat
-  (`RESULT.md`, last two sections). Masking the listed industry words (about 1.6% of words) delays
+  (`RESULT.md`, last two sections). Masking the listed industry words (about 1.6% of words) moves
   the half-life by one grid step for the two readers tested (25 to 50 words, 50 to 100) and leaves
-  the plateau within 5 points, so those words are not required; a coarse word list does not rule
+  the plateau within 5 points (qwen 27 of 72 masked against 30 of 72 unmasked at 1600 words; llama
+  34 against 34). At n = 72 a 3-hit difference is inside the noise of the pre-registered rule (a),
+  which allows up to a 2x half-life shift and 10 plateau points, so this is not a measured effect
+  size, and the listed words are not shown to be required; a coarse word list does not rule
   out other topical cues, so "style alone" is not claimed. Income, location and
   employer are not tested here and are not claimed here. The live app does not infer industry.
 - **One corpus**, of 2004 blog text, with self-reported labels.

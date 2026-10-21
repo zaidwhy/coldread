@@ -35,14 +35,14 @@ exactly (504 records, 0 errors, 0 unparsed on each; same accuracy figures,
 same Wilson intervals, same half-lives: gender 800/50, age band 100/25, sign
 never/never).
 
-Work is committed locally. **It has not been pushed to any remote** - the
-repo is local-only. Whether and where to publish this (a public repo, a blog
-post pointing at the README, anything else) is Zaid's call, not something to
-be decided or executed by an agent.
+Work is committed and pushed. *(Corrected 2026-10-22: this line used to say the
+repo was local-only. It is public at github.com/zaidwhy/coldread, with public
+releases since 2026-09-05; the Zenodo concept DOI 10.5281/zenodo.22309660
+resolves to v1.4.0.)*
 
 ## What is deliberately not done
 
-- No push to any remote, per the task instructions for this session.
+- (Historical: that first session did not push; the repo has since been published.)
 - No new experiments and no changed conclusions - this session only wrote
   documentation and one screenshot around results that already existed.
 - No attempt to control the size/family confound across the three models
