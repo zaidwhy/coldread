@@ -2,6 +2,10 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## 2026-10-22 (no release)
+
+- Docs only (33f5d95): half-life definition and grid resolution, step 3b counts, uncorrected comparisons noted, reader sizes and quantisation, author mentions. No result changed; no new tag; 28 tests.
+
 ## v1.4.0 - 2026-10-14
 
 - Date note: `CITATION.cff` says 2026-10-14 (local date); the GitHub release was published 2026-10-13T19:06:51Z and the Zenodo record 23349608 is dated 2026-10-13. The same release, one day apart by timezone; the cff date is left as is.
