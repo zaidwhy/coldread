@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import random
 import sys
+
+import pytest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -135,3 +137,17 @@ def test_shipped_masked_industry_results_reproduce_and_the_control_never_clears(
         assert a["records"] == 504, path
         assert a["half_life"]["industry"] == expected, path
         assert a["half_life"]["sign"] is None, path
+
+
+def test_build_sample_help_does_not_rebuild_the_sample(capsys):
+    # --help used to be ignored, so asking for usage rewrote data/sample.json.
+    with pytest.raises(SystemExit) as exc:
+        build_sample.main(["--help"])
+    assert exc.value.code == 0
+    assert "--industry" in capsys.readouterr().out
+
+
+def test_build_sample_rejects_an_unknown_flag():
+    with pytest.raises(SystemExit) as exc:
+        build_sample.main(["--industy"])
+    assert exc.value.code == 2

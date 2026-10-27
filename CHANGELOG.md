@@ -2,6 +2,10 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## 2026-10-28 (no release)
+
+- `build_sample.py` parses its flags with argparse. Before, any argument other than `--industry` was ignored, so `python build_sample.py --help` rebuilt `data/sample.json` instead of printing usage; an unknown flag now exits 2. The rebuilt samples are identical (seed 1938): the same 72 authors as every committed results file. No result changed; 30 tests.
+
 ## 2026-10-22 (no release)
 
 - Docs only (33f5d95): half-life definition and grid resolution, step 3b counts, uncorrected comparisons noted, reader sizes and quantisation, author mentions. No result changed; no new tag; 28 tests.

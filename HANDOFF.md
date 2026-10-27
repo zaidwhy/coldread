@@ -126,3 +126,9 @@ Pre-registration, lexicon (`topicmask.py`) and decision rule are in PLAN.md (cha
 
 Zaid approved the deposit. README, CHANGELOG, CITATION.cff (version 1.4.0, date 2026-10-14) and `.zenodo.json` now state the step 3b result and its limits; numbers were re-derived with `analyze.py` first. Signed tag v1.4.0, GitHub release created, Zenodo webhook accepted it. Version DOI **10.5281/zenodo.23349608** (concept DOI 10.5281/zenodo.22309660 resolves to it). Mistral and the 3B reader were not masked; that remains the only open extension and is not planned under closure mode.
 
+
+## 2026-10-28 night refine pass
+
+- Re-ran the profile's falsification command `python analyze.py out/results-qwen2.5_7b-instruct.jsonl`: gender 800, age band 100, sign never, matching RESULT.md. 28 tests passed before the change.
+- Found: `python build_sample.py --help` ignored the flag and rebuilt `data/sample.json`. Fixed with argparse (`--industry` kept, unknown flags exit 2); 2 regression tests, 30 passed. Both samples rebuilt and checked: same 72 authors as the committed qwen results (profile and industry).
+- Decision taken: the "never words" wording in analyze.py output stays, because the committed and Zenodo-deposited `out/analysis-*.txt` files contain it and reruns should match them byte for byte.

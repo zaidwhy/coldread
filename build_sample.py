@@ -14,9 +14,9 @@ Writes data/sample.json.
 industry. Writes data/sample_industry.json.
 """
 
+import argparse
 import json
 import random
-import sys
 from pathlib import Path
 
 import pandas as pd
@@ -71,8 +71,11 @@ def pick_industry(eligible, rng):
     return picked
 
 
-def main():
-    industry_mode = "--industry" in sys.argv[1:]
+def main(argv: list[str] | None = None):
+    parser = argparse.ArgumentParser(description="Build the balanced author sample from the Blog Authorship Corpus.")
+    parser.add_argument("--industry", action="store_true",
+                        help="build the step-3 industry sample (data/sample_industry.json) instead of data/sample.json")
+    industry_mode = parser.parse_args(argv).industry
     if not CSV.exists():
         raise SystemExit(f"missing {CSV} - download it first")
 
