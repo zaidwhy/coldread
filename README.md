@@ -1,4 +1,7 @@
-<img src=".github/plate.svg" alt="COLD READ: How long you stay anonymous depends on the model reading you, not on the text. 50, 800 or 1600 words; 3 model families, negative control held; DOI 10.5281/zenodo.22309660. Core strip: 35 commits over 10 weeks, Aug 2026 to Oct 2026." width="100%">
+<picture>
+<source media="(max-width: 600px)" srcset=".github/plate-narrow.svg">
+<img src=".github/plate.svg" alt="COLD READ: How long you stay anonymous depends on the model reading you, not on the text. 50, 800 or 1600 words; 3 model families, negative control held; DOI 10.5281/zenodo.22309660. Core strip: 37 commits over 11 weeks, Aug 2026 to Oct 2026." width="100%">
+</picture>
 
 # COLD READ
 
