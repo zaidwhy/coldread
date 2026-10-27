@@ -1,3 +1,5 @@
+<img src=".github/plate.svg" alt="COLD READ: How long you stay anonymous depends on the model reading you, not on the text. 50, 800 or 1600 words; 3 model families, negative control held; DOI 10.5281/zenodo.22309660. Core strip: 35 commits over 10 weeks, Aug 2026 to Oct 2026." width="100%">
+
 # COLD READ
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22309660.svg)](https://doi.org/10.5281/zenodo.22309660)
@@ -288,3 +290,7 @@ metadata is in [`CITATION.cff`](CITATION.cff), and GitHub's "Cite this repositor
 
 Every commit here is signed with ed25519 key `EFE9 4832 B2B9 80D9 B583 91F2 8FAA BCC1 B1AC 09E5`
 and shows as Verified on GitHub. A commit in my name without a valid signature was not made by me.
+
+---
+
+<sub>One plate from the survey at [github.com/zaidwhy](https://github.com/zaidwhy). The strip on the plate above is this repository's own commit history, one band per week.</sub>
