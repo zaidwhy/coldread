@@ -1,299 +1,187 @@
-<picture>
-<source media="(max-width: 600px)" srcset=".github/plate-narrow.svg">
-<img src=".github/plate.svg" alt="COLD READ: How long you stay anonymous depends on the model reading you, not on the text. 50, 800 or 1600 words; 3 model families, negative control held; DOI 10.5281/zenodo.22309660. Core strip: 37 commits over 11 weeks, Aug 2026 to Oct 2026." width="100%">
-</picture>
-
 # COLD READ
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22309660.svg)](https://doi.org/10.5281/zenodo.22309660)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-**How many words can you write before a machine knows who you are?**
+"You are identifiable after N words" cannot be finished without naming the model that reads you.
+Four local language models were shown the same 72 bloggers in growing slices (25 to 1600 words)
+and asked for gender, age band and star sign every time; the number of words each needed to beat
+a coin flip differed widely between models, while the star sign control, which cannot be inferred
+from style, never cleared its bar. One part of that result does not hold up: the headline "32x
+spread" in gender is confounded by an option-order bias in the prompt (see
+[Where the result is weaker than it was written](#where-the-result-is-weaker-than-it-was-written)).
 
-<img src="docs/coldread-curves.svg" alt="Gender inference accuracy against words shown, for two models. llama3.1:8b clears chance at 50 words, qwen2.5:7b at 800. The star sign control never leaves its floor." width="100%">
+It is for anyone who quotes a word-count threshold for anonymity, and for anyone who wants to run
+the same sweep on another model. It needs a local [Ollama](https://ollama.com) with the models
+pulled. The corpus (Blog Authorship Corpus, Schler et al., AAAI Spring Symposium 2006; Hugging
+Face `tasksource/blog_authorship_corpus`, non-commercial research use) is gitignored and not
+redistributed.
 
-<sub>Plate 02 shows the first two readers. The third, <code>mistral:7b</code> (gender at about 1600 words), is in <a href="RESULT.md">RESULT.md</a>.</sub>
+```
+python build_sample.py                          # balanced 72-author sample, seed 1938
+python sweep.py --model qwen2.5:7b-instruct     # 504 calls, resumable, appends to out/
+python analyze.py out/results-qwen2.5_7b-instruct.jsonl
+python -m pytest -q                             # no model needed; reads the committed results
+```
 
-I went looking for a number. What I found was that the question is malformed, and the
-reason it is malformed is more interesting than the number would have been.
+Raw per-call results for every reader are committed under `out/`, so every table below
+regenerates with `analyze.py` without a model call.
 
-## The mental model that turns out to be wrong
+## The measurement
 
-Ask anyone how anonymity works online and you get some version of a threshold. Write a
-sentence and you are safe; write an essay and you are exposed. Somewhere between the two
-there is a line you cross. Anonymity, in this picture, is a property of the text - a budget
-you spend down, word by word, until it runs out.
+For each author and each word count in 25, 50, 100, 200, 400, 800, 1600, the model sees that
+author's first N words and must answer; refusal and "unknown" are not allowed, because an
+abstention would bend the curve down at the low word counts. Temperature 0, seed 1938.
 
-So I tried to measure the line. Seventy-two authors from a public, labelled blog corpus,
-balanced across age bands and both genders. Each author's own opening words, shown to a
-local model in growing slices - twenty-five, fifty, a hundred, and on up to sixteen hundred.
-At every slice the model had to commit: gender, age band, star sign. No refusals allowed, no
-"unknown", because an abstention would quietly bend the curve down at exactly the low word
-counts that matter most.
+| Term | Meaning (`analyze.py`) |
+|---|---|
+| Bar | the best constant guess on the sample: gender 50.0%, age band 33.3%, star sign 15.3%, industry 25.0% |
+| Half-life | the first grid cell whose Wilson 95% lower bound is above the bar; no interpolation, so 2x resolution |
+| Control | star sign: labelled in the corpus, not inferable from style, same pipeline. If it ever cleared, the pipeline leaks |
 
-Then I ran the identical text, the identical prompt, and the identical seed through two more
-models from two other labs, all three in the same size class.
+Seven grid cells are seven comparisons per curve, uncorrected for multiplicity: with independent
+steps the chance a null curve clears somewhere is about 16% (1 - 0.975^7, computed, not
+simulated). No paired test between readers is in the study.
 
-**The line moved by a factor of thirty-two** (on a doubling grid, so read it as somewhere between
-16x and 64x; the next section says exactly what "line" means here).
+## Results
 
-One model is past a coin flip on gender almost immediately, and by the end of the passage it is
-right nine times out of ten. Another needs the better part of a thousand words. The third needs
-the whole sixteen hundred. Same authors. Same words. Same question. Models of one size class (7.2B, 7.6B and 8.0B
-parameters, all Q4_K_M via Ollama; see "What this is not"). The only thing that changed was who
-was reading.
+Runs 2026-08-23 to 2026-10-06, all Q4_K_M via Ollama, regenerated 2026-11-13 with `analyze.py`.
+Half-life in words; "never" means it did not clear within 1600.
 
-## What "half-life" means here
+| Reader (params) | Gender half-life | Gender at 1600 | Age band half-life | Age at 1600 | Sign (control) | Industry half-life |
+|---|---|---|---|---|---|---|
+| llama3.1:8b (8.0B) | 50 | 90.3% | 25 | 59.7% | never | 25 |
+| qwen2.5:7b-instruct (7.6B) | 800 | 72.2% | 100 | 58.3% | never | 50 |
+| mistral:7b (7.2B) | 1600 | 63.9% | 25 | 70.8% | never | 50 |
+| llama3.2 (3.2B) | never | 61.1% | 100 | 63.9% | never | 200 (27 of 504 unparsed) |
 
-It is not a decay point. In the code (`analyze.py`, the `half_life` expression) it is the first
-cell of a doubling word-count grid (25, 50, 100, 200, 400, 800, 1600) at which the Wilson 95 percent
-lower bound of the reader's accuracy is above the bar, the best constant guess. There is no
-interpolation and no curve fit. The grid has 2x resolution, so "32x" is the ratio of two grid cells
-and means between 16x and 64x. The slowest endpoint is thin: mistral's 1600-word gender crossing is
-46 of 72 with a lower bound of 0.5235 against a bar of 0.50, two hits above the bar (44 of 72 would
-give 0.4956 and the half-life would be "never"). The seven grid steps are seven comparisons per
-curve and are uncorrected for multiplicity: under the null a curve could clear somewhere by chance
-with probability near 16 percent, so a single half-life can move one grid cell by chance. No paired
-test between readers was run.
+Full per-step tables with intervals: [`RESULT.md`](RESULT.md). The industry attribute (adults only,
+four industries, a different 72 authors, 25% bar) and its topic-word masking test are in the last
+two sections of `RESULT.md`; masking about 1.6% of words moved the half-life one grid step
+(llama 25 to 50, qwen 50 to 100) and left the plateau within 5 points, which is inside the noise
+at n = 72. It does not show that style alone carries industry.
 
-## The finding
+What survived across readers, each a result of the committed `out/` files:
 
-**The anonymity half-life is not a property of the text. It is a property of the reader.**
+- **The control held** in every reader and every attribute: star sign never cleared its bar.
+- **Readers differ.** On the same authors llama3.1:8b is well ahead of the others on gender.
+- **Exposure accrues.** The curves climb; none snaps on at a threshold.
+- **Size matters inside a family.** llama3.2 (3.2B) never clears gender; llama3.1 (8.0B) clears at 50
+  (the two are also different releases).
+- **Memorisation was probed**, with a different-author control, and the recorded gap was
+  negligible. Numbers for this are unverified (see [Status](#status)).
 
-This sounds obvious once said and it is not how anyone talks about it. Every practical
-guideline in this space takes the form *you are identifiable after N words*, and that
-sentence cannot be completed without naming the model. Worse, N is not a constant of nature
-that we are gradually measuring more precisely. It is a moving target that falls as models
-improve. A threshold published today describes the readers that exist today.
+What did not survive, kept in the record on purpose:
 
-Anonymity, then, is not something you have. It is a relationship between what you wrote and
-whoever is currently reading, and only one side of that relationship is under your control.
+- **Below-chance dip on gender.** Qwen and mistral read 44.4% at 25 words, llama3.1 59.7%. In no
+  reader does the interval exclude 0.50, and the option-order bias below explains it better than
+  "stereotype matching". It is an observation, not a finding.
+- **A shared age ceiling near 60%.** Qwen and llama3.1 sat at 58.3% and 59.7%; mistral reaches
+  70.8% at 1600 and is still climbing. Withdrawn.
+- **One ranking of readers.** Mistral is slowest on gender and tied fastest on age band.
 
-## Why you can believe any of this: the star sign
+## Where the result is weaker than it was written
 
-The load-bearing piece of this experiment is the attribute that cannot possibly work.
+Found by an external red-team pass of the public repo (2026-11-10) and re-checked here on
+2026-11-13 against the committed `out/*.jsonl` and `sweep.py`. No result file changed.
 
-Alongside gender and age, the model was asked for each author's star sign. Star sign is
-labelled in the corpus and it is not inferable from writing - there is no causal path from
-being a Capricorn to how you punctuate. It is not perfectly absent from the text, though: in the
-first 1600 words, 6 of 72 authors mention star-sign or birthday terms (one writes their own sign).
-The topic-word masking in step 3b masks an industry lexicon only, not these terms, so nothing was
-done about them. The control never cleared, so it did no harm here, but the control is "not
-inferable from style", not "never stated". It went through the identical pipeline as the other
-two attributes: same prompt, same slices, same scoring.
+- **Option order drives gender accuracy.** `sweep.py::option_order` lists "male" first for 38
+  authors and "female" first for 34. With female listed first, mistral answered "female" for all 34
+  authors at 1600 words (14 of 34 correct, the share of women among them), against 32 of 38 correct
+  when male was listed first. Qwen at 1600 words: 18 of 34 against 34 of 38. Qwen picks the
+  first-listed gender for 66 of 72 authors at 25 words, and a first-option picker scores 30 of
+  72 = 41.7% there (observed 44.4%). So the gender half-lives of 800 and 1600 partly measure a
+  prompt-position habit, and the **"32x" gap is not established as a magnitude**. Reader differences
+  in the weak sense (llama3.1:8b beats the others) are not undone by this, but the size of the gap is.
+- **Counterbalancing is not balanced against the truth.** Truth is the first-listed option for 30 of
+  72 authors, so the bias is averaged in, not removed.
+- **Age before gender in llama3.1:8b rests on one hit.** Age clears at 25 words (lower bound 0.3354
+  against a 0.3333 bar) and falls under the bar again at 50, where gender clears.
+- **Masked industry runs fall under the bar at 200 words** for both readers; their sustained
+  crossing is later than the half-life reported.
+- **The live app states the withdrawn claim.** `index.html` tells a user under 100 words that the
+  reader "scores worse than a coin flip on gender (44%)". Source was not changed in this pass.
+- **The 3B "constant predictor" claim.** `RESULT.md` says 157 of 157 "male"; the committed archive
+  file (`out/archive/results-qwen2.5_3b-instruct-PREBALANCE.jsonl`) holds 178 of 178 "male" on 26
+  authors, all run before counterbalancing, and it was never re-run with the current prompt.
+- **A fix needs a rerun** with the gender options in a fixed or fully crossed order. Not run.
 
-It never left the floor. Not once, at any word count, in any of the three models.
+## The artifact and its ethics rule
 
-That null result is what makes the rest trustworthy. If sign had climbed alongside gender
-and age, it would have meant the pipeline was leaking signal from somewhere other than the
-writing - a prompt artifact, a label leak, a bug in the scoring - and every number in this
-repository would have been void. A rising curve is only evidence of inference if you have
-also shown that a curve *cannot* rise on its own.
-
-I would rather have one measured attribute with a working control than five without one.
-
-## Two shapes, not two speeds
-
-The two real attributes do not merely differ in how much text they need. They have different
-shapes, and the order held across all three models: age clears before gender in every one.
-
-**Age is cheap, and I thought it was capped.** It becomes inferable almost immediately. The
-first two models then plateaued at almost exactly the same ceiling, near 60% - two unrelated
-architectures converging on the same limit, which I read as a fact about the text: blog prose
-carries only so much age information. The third model walked through that ceiling to 70.8% and
-was still climbing. The intervals are wide enough that I cannot say the ceilings truly differ,
-but the tidy story did not survive a third reader, so I have withdrawn it.
-
-**Gender is expensive and rising.** It takes far more text to become inferable, and then it
-keeps climbing. No model has found its ceiling by the end of the passage. Whatever
-carries gender in writing, it is a deeper seam than whatever carries age.
-
-Cheap against expensive is a structural difference, and the readers do not even agree on a
-ranking: the slowest reader of gender is tied fastest on age. It means there
-is no single anonymity curve to draw, even for one reader. Each attribute has its own.
-
-## Exposure accrues, it does not switch on
-
-Neither curve snaps. They climb.
-
-There is no word count at which a person goes from anonymous to exposed, which means the
-whole framing of a threshold - the framing I started with, and the framing the app I built
-initially assumed - is a convenience rather than a description. What actually happens is
-that every additional sentence makes the guess a little better than it was. There is no
-line. There is a slope.
-
-## One finding that did not survive replication
-
-On the first model, short samples produced results *worse* than chance on gender. Not
-uninformed - actively anti-correlated, consistently, across the shortest slices. My reading
-at the time was that a short sample surfaces stereotype matching, which the genuine signal
-only later overrides. It is a lovely story: ignorance would look like a coin flip, and this
-looked like confident wrongness.
-
-The second model did not do it. It was above chance from the very first slice. The third
-dipped to the same 44.4% at the first slice and recovered by the next; in no model does the
-interval at that slice exclude a coin flip, so the dip stays an observation, not a finding.
-
-So that finding describes one model, not language models, and I have left it in the record
-rather than quietly dropping it. It is exactly the kind of result that would have become a
-headline had I stopped at n = 1, and the only reason I know better is that I ran a second
-reader. That is the argument for replication in a nutshell, and it cost one afternoon.
-
-## The obvious objection, tested
-
-The corpus is public and labelled, so perhaps the model is not inferring anything - perhaps
-it memorised these authors during training and is looking them up.
-
-Tested directly rather than argued away. Feed the model a verbatim prefix from an author,
-let it continue, and score the continuation against that author's real next words and
-against a different author's next words. Only the gap between the two is informative, since
-overlap in English is never exactly zero.
-
-The gap is effectively nothing. Given a prefix about a Nebraska rock band, the model invents
-plausible album titles where the real author wrote something scrappier and funnier. Fluent,
-confident, on-topic, and nothing like the source - which is what a model that has never seen
-the text looks like.
-
-The main result argues the same thing from a different direction: **retrieval does not
-slope.** A model looking things up would spike once it had enough text to trigger a match.
-These curves climb smoothly, in one case from below chance. Gradual improvement from an
-anti-correlated start is the signature of inference, not lookup.
-
-Full method and numbers in [`RESULT.md`](RESULT.md).
-
-## The artifact
-
-A two-seat chat app. Two people, both consenting, talk through it. After every message the
-seat that sent it is re-profiled from everything they have typed so far, and both seats
-watch both profiles fill in live.
+`python server.py`, then open `?seat=a` and `?seat=b`. A two-seat chat in which both people consent;
+after each message the sender is re-profiled from everything they have typed, and both seats see both
+profiles fill in. Star sign is always shown, marked as the control. It reads only text a person typed
+into it in that session; the server returns 403 until both seats have consented, and nothing is stored
+when it stops. The app does not infer industry. Its thresholds are the qwen2.5:7b numbers and the
+interface names that model.
 
 ![Two-seat COLD READ session: seat A at 131 words with age band inferred and gender still marked unreliable, seat B at 32 words showing the below-chance warning](docs/screenshot.png)
 
-A real session against the current code, not a mockup. The left seat has passed the age
-threshold, so age band shows a real guess with an `INFERABLE` tag while gender still carries
-`UNRELIABLE`. The right seat is under the floor entirely and gets the red warning, which
-names the model and says plainly that at this word count it scores worse than a coin flip -
-rather than dressing a bad guess up as a tentative one. Star sign is always displayed and
-always marked `control - never inferable`. The negative control from the sweep, running live,
-where a user can see it.
+Screenshot of a real session on 2026-08-23.
 
-The thresholds in the app are the measured numbers for one specific model, and the interface
-says which one. That is not pedantry. Given everything above, a threshold without a named
-reader is not a fact - it is a slogan.
+## Architecture
 
-## The ethics rule
+| Part | File | Role |
+|---|---|---|
+| Sampler | `build_sample.py` | 72 authors, 12 per age x gender cell, seed 1938 |
+| Sweep | `sweep.py` | one call per (author, word count); resumable JSONL in `out/`; also `--provider openrouter` with a spend cap |
+| Analysis | `analyze.py` | accuracy, Wilson intervals, best-constant bars, half-life; `--json` for structured output |
+| Probe | `contamination_check.py` | verbatim 50-word prefix, model continues, trigram overlap with the true vs a different author's next 50 words |
+| Masking | `topicmask.py` | industry word lexicon (about 150 stems) for step 3b |
+| App | `server.py`, `index.html` | the two-seat chat |
 
-The app reads only text a person knowingly typed into it, on that screen, in that session.
-No scraping the other party, no camera, nobody profiled who did not sit down and agree.
-Profiling does not begin until both seats have consented. Nothing survives the server
-stopping.
+Details, failure modes and the scaling plan: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Pre-registered design and decision log: [`PLAN.md`](PLAN.md).
 
-The moment a tool like this profiles a non-consenting third party it stops being an exhibit
-about the harm and becomes the harm. So it cannot, structurally, rather than merely being
-asked not to.
+## Prior work
 
-## What this is not
+Argamon, Koppel, Pennebaker and Schler (*Automatically profiling the author of an anonymous text*,
+CACM 2009) profiled age and gender on this corpus statistically; Eder (*Does size matter?*, DSH
+2015) swept sample length for authorship attribution with one method; Staab et al.
+([arXiv:2310.07298](https://arxiv.org/abs/2310.07298)) measured LLM attribute inference; Lermen et
+al. ([arXiv:2602.16800](https://arxiv.org/abs/2602.16800)) showed large-scale profile linkage.
+None sweeps input size across several readers, which is the gap this study addressed, subject to
+the confound above.
 
-- **Seventy-two authors.** The intervals are wide. The gender threshold should be read as
-  "somewhere in the high hundreds of words", not as a precise figure.
-- **Three models of one size class, plus a smaller one that could not do the task at all.** The
-  three are not identical in size: `qwen2.5:7b-instruct` is 7.6B, `llama3.1:8b` is 8.0B and
-  `mistral:7b` is 7.2B parameters (3B reader: `llama3.2` at 3.2B), all Q4_K_M via Ollama. A 7.2B to
-  8.0B span supports "same size class", not "same size". Weights at another precision would be a
-  different protocol. A
-  3B model answered the same way on every single call - a constant predictor, not a curve. Holding
-  size to the 7-8B class, family alone moves the gender threshold thirty-two-fold, so the spread is
-  not a size effect. Size matters on top of family as well: inside the llama family, the 3B model
-  never clears gender within 1600 words where the 8B clears at 50 (the two are also one release
-  apart, 3.2 and 3.1).
-- **The third model's gender threshold is the narrowest pass in the study**: it clears only at the
-  last slice, so read it as "about sixteen hundred words or more".
-- **Gender and age band, plus industry (step 3, run 2026-10-04).** Industry is the one attribute
-  added beyond the demographic pair, on the same public corpus, adults only, with star sign as the
-  control: it clears chance within 25 to 200 words for all four readers and the control stays flat
-  (`RESULT.md`, last two sections). Masking the listed industry words (about 1.6% of words) moves
-  the half-life by one grid step for the two readers tested (25 to 50 words, 50 to 100) and leaves
-  the plateau within 5 points (qwen 27 of 72 masked against 30 of 72 unmasked at 1600 words; llama
-  34 against 34). At n = 72 a 3-hit difference is inside the noise of the pre-registered rule (a),
-  which allows up to a 2x half-life shift and 10 plateau points, so this is not a measured effect
-  size, and the listed words are not shown to be required; a coarse word list does not rule
-  out other topical cues, so "style alone" is not claimed. Income, location and
-  employer are not tested here and are not claimed here. The live app does not infer industry.
-- **One corpus**, of 2004 blog text, with self-reported labels.
+## How it is tested
 
-## Prior work, and the gap
+`python -m pytest -q`: 30 passed (2026-11-13, Windows 11, Python 3.12). The tests check that the
+committed JSONL reproduces the half-lives and tables, that the star sign control never clears, the
+industry and masking results, the OpenRouter provider and the topic mask. They do not call a model.
+CI (`.github/workflows/ci.yml`) runs the same on Python 3.12.
 
-Three lines of work frame this one, and it is worth being precise about which parts are theirs.
+## Status
 
-**Classical author profiling.** Argamon, Koppel, Pennebaker and Schler (*Automatically profiling
-the author of an anonymous text*, Communications of the ACM, 2009) established that age and gender
-are recoverable from ordinary writing by statistical means, on this same blog corpus. The task is
-theirs, not mine.
+Measurement closed at n = 72 authors, four readers, one corpus (self-reported 2004 blog labels).
+Archived as Zenodo v1.4.0 (DOI above, `CITATION.cff` 2026-10-14). The archived text predates the
+confound section above; a new deposit needs Zaid's approval and a rerun of the gender sweeps first.
 
-**Sample length in stylometry.** The text-length axis is also not new: Eder (*Does size matter?
-Authorship attribution, small samples, big problem*, Digital Scholarship in the Humanities, 2015)
-made exactly the point that attribution accuracy depends on how much text you have and collapses
-below a minimum. So "how many words does it take" is an old question. What that literature holds
-fixed is the classifier: one method, swept over length.
+Unverified in this repository: the contamination result (+0.0021 mean trigram overlap, gap against
+control, 20 authors, qwen only) has no raw output committed, and `contamination_check.py` could not
+be rerun on 2026-11-13 because `qwen2.5:7b-instruct` is not pulled on this machine. The 20 probed
+authors are the first 20 in the sample and all are aged 13-17. The claim that 6 of 72 authors
+mention star-sign or birthday terms also has no committed source text. Treat both as not verified.
 
-**LLM-era inference.** Staab, Vero, Balunovic and Vechev (*Beyond Memorization: Violating Privacy
-Via Inference with Large Language Models*, arXiv:2310.07298, 2023) showed language models infer
-personal attributes from ordinary text at close to human accuracy and a fraction of the cost.
-Lermen, Paleka, Swanson, Aerni, Carlini and Tramer (*Large-scale online deanonymization with LLMs*,
-arXiv:2602.16800, 2026) showed models can link pseudonymous profiles to each other at scale, and
-argue practical obscurity no longer holds. Both treat inference as a capability and measure how far
-it reaches.
+## Limits
 
-**The gap.** Neither LLM-era result sweeps input size, so neither reports the point on that axis
-where a writer stops being anonymous. And the older length-sweep literature sweeps length against a
-single method, so it cannot see the effect that turns out to dominate: **swap the reader and the
-threshold moves by a factor of thirty-two on identical text, among models of one size.** That is
-what is measured here, with a labelled negative control to show a curve cannot rise on its own, and
-with three model families to check that the number is not a fact about any one of them.
+- 72 authors, so intervals are wide; read a gender half-life as "high hundreds of words or more",
+  and mistral's 1600 as the narrowest pass (46 of 72, lower bound 0.5235).
+- Readers span 7.2B to 8.0B plus one 3.2B model, one quantisation, Ollama only. Ollama at temperature
+  0 and a fixed seed is not fully deterministic here: a full qwen industry re-run changed 25 of 504
+  predictions, llama3.1:8b changed 0.
+- Demographic attributes plus industry only. Income, location and employer are not tested and not
+  claimed.
+- No paired test between readers; multiplicity uncorrected.
 
-The consequence is a claim about the shape of the question rather than about a number. A guideline
-of the form "you are identifiable after N words" is incomplete without naming the reader, and N is
-not a constant being measured more precisely over time - it falls as models improve.
+## License
 
-## Reproduce
-
-Requires a local Ollama with the target models pulled. The corpus is the Blog Authorship Corpus
-(Schler, Koppel, Argamon and Pennebaker, *Effects of Age and Gender on Blogging*, AAAI Spring
-Symposium on Computational Approaches to Analyzing Weblogs, 2006), available as
-`tasksource/blog_authorship_corpus` on Hugging Face, free for non-commercial research. It is gitignored here, not redistributed.
-
-```
-python build_sample.py                              # balanced 72-author sample
-python sweep.py --model qwen2.5:7b-instruct         # resumable, appends to out/
-python sweep.py --model llama3.1:8b
-python sweep.py --model mistral:7b
-python analyze.py out/results-qwen2.5_7b-instruct.jsonl
-python contamination_check.py --model qwen2.5:7b-instruct
-python server.py                                    # then open ?seat=a and ?seat=b
-```
-
-Raw per-call results for all three models are committed under `out/`, so every table in
-[`RESULT.md`](RESULT.md) can be regenerated without re-running a single model call.
-
-## Copyright, citation, and provenance
-
-**Copyright (c) 2026 Zaid Ali Syed.** ORCID [0009-0003-4313-1510](https://orcid.org/0009-0003-4313-1510).
-
-Two licences, because there are two different things here. The **code** is MIT - see
-[LICENSE](LICENSE) - and you may use it with the copyright notice retained. The **written analysis
-and the experimental design** are the archived record on Zenodo, released under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): free to reuse and build on, attribution
-required. If you build on the findings, cite the record rather than reproducing the text:
+Code is MIT ([LICENSE](LICENSE)). The written analysis and experimental design are the Zenodo record,
+CC BY 4.0; cite it, do not copy the text:
 
 > Syed, Z. A. (2026). *COLD READ: The Anonymity Half-Life Is a Property of the Reader*.
 > Zenodo. https://doi.org/10.5281/zenodo.22309660
 
-The DOI above is the concept DOI: it always resolves to the newest archived version. Machine-readable
-metadata is in [`CITATION.cff`](CITATION.cff), and GitHub's "Cite this repository" panel reads it directly.
-
-Every commit here is signed with ed25519 key `EFE9 4832 B2B9 80D9 B583 91F2 8FAA BCC1 B1AC 09E5`
-and shows as Verified on GitHub. A commit in my name without a valid signature was not made by me.
-
----
-
-<sub>One plate from the survey at [github.com/zaidwhy](https://github.com/zaidwhy). The strip on the plate above is this repository's own commit history, one band per week.</sub>
+Metadata in [`CITATION.cff`](CITATION.cff). ORCID
+[0009-0003-4313-1510](https://orcid.org/0009-0003-4313-1510). Commits are signed with ed25519 key
+`EFE9 4832 B2B9 80D9 B583 91F2 8FAA BCC1 B1AC 09E5`; 30 of 38 commits show a valid signature locally
+(`git log --format=%G?`), 8 do not, including the one holding the first gate and qwen data.

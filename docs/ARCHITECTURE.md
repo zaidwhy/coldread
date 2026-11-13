@@ -18,7 +18,7 @@ Measure, per attribute, how many words a person writes before a language model c
 
 - Local models only, through Ollama: free, private, and seedable. The runs assume a laptop GPU with 4 GB of VRAM, so 7 to 9B models at 4-bit.
 - The corpus is public and labelled (Blog Authorship Corpus, Schler et al. 2006), so contamination is a live objection and has its own test.
-- Ethics rule: only gender and age band, both self-reported labels in the corpus. No occupation or location attributes, in the sweep or the app.
+- Ethics rule: gender and age band, plus industry (approved 2026-10-04, adults only, public corpus; the live app never infers it). No location, employer or income attributes, in the sweep or the app.
 - n is 72 authors, so intervals are wide and a small difference between models is not automatically a finding.
 
 ## Architecture
@@ -43,7 +43,7 @@ tests/test_analysis.py   smoke test: the committed JSONL reproduces the headline
 ## Data flow: one sweep
 
 1. `sweep.py` loads `data/sample.json` and, for each author and each of 25, 50, 100, 200, 400, 800 and 1,600 words, takes that author's first N words.
-2. It builds one prompt with the gender and age options listed in a deterministic per-author order, so half the authors see each option first. This exists because an early 3B run answered "male" 157 times out of 157 with "male" listed first.
+2. It builds one prompt with the gender and age options listed in a deterministic per-author order (parity of the author id). This exists because an early 3B run answered "male" 157 times out of 157 with "male" listed first. The split is 38 male-first and 34 female-first authors and is not balanced against the true gender, so the order bias is averaged in rather than removed (see README, "Where the result is weaker than it was written").
 3. It posts to Ollama's `/api/chat` with `temperature 0`, `seed 1938` and `format json`. The model must commit to all three attributes every time: refusal and "unknown" are forbidden, because an abstention would quietly bend the curve at the small word counts that matter most.
 4. `parse_reply` takes the first JSON object in the reply. Each result, including a failed call, is appended to `out/results-<model>.jsonl` as one line.
 5. `analyze.py` scores each attribute against the best constant guess (not 1 over k), attaches a 95% Wilson interval, and marks the first word count whose lower bound clears that baseline.
@@ -68,7 +68,7 @@ tests/test_analysis.py   smoke test: the committed JSONL reproduces the headline
 | Reply is not parseable JSON | no prediction for that cell | stored as an error row and counted as unparsed in the analysis header |
 | A failed row on resume | `sweep.py` treats any stored row as done, so it would never retry it | the runner script removes error rows and reruns until all 504 are clean |
 | Author shorter than a word count | the slice would silently duplicate the previous step | that cell is skipped, so the curve is never flattened by padding |
-| Option order bias | inflated accuracy on the first-listed option | deterministic counterbalancing per author |
+| Option order bias | accuracy follows the first-listed option (verified 2026-11-13: mistral answered "female" for all 34 female-first authors at 1600 words) | partial: per-author flip; a fully crossed or fixed order and a rerun are needed |
 | The model memorised the corpus | accuracy would be retrieval | direct probe with a different-author control; run and ruled out, see `RESULT.md` for which models |
 
 ## Tradeoffs
@@ -77,7 +77,7 @@ tests/test_analysis.py   smoke test: the committed JSONL reproduces the headline
 - **72 authors:** balanced cells and a one-command rerun, but wide intervals, so a new model landing a few points away is not a disagreement.
 - **Best constant guess as the baseline, not 1 over k:** stricter and honest about class balance, at the cost of gender's bar sitting at 50% exactly.
 - **Hard-coded app thresholds:** the live app uses the measured word counts from one model, which is documented in the app and README but means it names that reader explicitly.
-- **Two attributes only:** keeps the ethics bar low; extending needs an explicit written decision first.
+- **Few attributes:** gender, age band and industry only; extending needs an explicit written decision first.
 
 ## Scaling
 
@@ -100,6 +100,5 @@ $0. About 4 to 5 GB of disk per model and about 30 to 45 minutes of GPU per 504-
 
 ## Future
 
-- A third model family, started 2026-09-21 with `mistral:7b`; the result is not yet in `RESULT.md`.
-- A second size of the new family, to test whether the qwen pattern (flat at 3B, climbing at 7B) is general.
+- Rerun the gender sweeps with a fully crossed option order; the mistral family result and the llama 3B/8B size pair are already in `RESULT.md` but share the order confound.
 - Any new attribute waits on a written ethics decision in `HANDOFF.md`.

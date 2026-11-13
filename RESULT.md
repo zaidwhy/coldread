@@ -4,6 +4,8 @@
 504 calls, 0 errors, 0 unparsed. Raw data in `out/results-qwen2.5_7b-instruct.jsonl`,
 reproduce with `python analyze.py out/results-qwen2.5_7b-instruct.jsonl`.
 
+> **Note, 2026-11-13.** The gender half-lives and the "32x" spread below are confounded by an option-order bias in the prompt (verified against `out/*.jsonl`), and the 3B "157 of 157" and contamination numbers have no raw output committed. See the README section "Where the result is weaker than it was written" and "Status". The tables themselves regenerate from `analyze.py`.
+
 ## Result
 
 72 authors from the Blog Authorship Corpus, balanced across three age bands and both
