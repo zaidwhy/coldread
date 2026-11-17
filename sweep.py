@@ -72,7 +72,7 @@ Infer the author. Reply with exactly this JSON and nothing else:
 {{"industry": {industries}, "sign": one of {signs}}}"""
 
 
-def option_order(author_id, options):
+def option_order(author_id, options, order="parity"):
     """Counterbalance the order options are listed in.
 
     A 3B run answered "male" 157 times out of 157 with "male" always listed
@@ -80,7 +80,12 @@ def option_order(author_id, options):
     controlled by flipping the listing for half the authors - deterministically,
     so the sweep stays reproducible.
     """
-    flip = sum(ord(c) for c in str(author_id)) % 2 == 1
+    if order == "parity":
+        flip = sum(ord(c) for c in str(author_id)) % 2 == 1
+    else:
+        # Step 4 (PLAN.md, 2026-11-18): parity gave each order to different authors, so order and
+        # author could not be separated. "listed" and "reversed" fix the order for every author.
+        flip = order == "reversed"
     return list(reversed(options)) if flip else list(options)
 
 
@@ -96,23 +101,23 @@ def parse_reply(raw):
     return obj if isinstance(obj, dict) else None
 
 
-def build_prompt(text, author_id="", task="profile"):
+def build_prompt(text, author_id="", task="profile", order="parity"):
     if task == "industry":
         return PROMPT_INDUSTRY.format(
             text=text,
-            industries=" or ".join(f'"{i}"' for i in option_order(author_id, INDUSTRIES)),
-            signs=", ".join(option_order(author_id, SIGNS)),
+            industries=" or ".join(f'"{i}"' for i in option_order(author_id, INDUSTRIES, order)),
+            signs=", ".join(option_order(author_id, SIGNS, order)),
         )
     return PROMPT.format(
         text=text,
-        genders=" or ".join(f'"{g}"' for g in option_order(author_id, GENDERS)),
-        bands=" or ".join(f'"{b}"' for b in option_order(author_id, BANDS)),
-        signs=", ".join(option_order(author_id, SIGNS)),
+        genders=" or ".join(f'"{g}"' for g in option_order(author_id, GENDERS, order)),
+        bands=" or ".join(f'"{b}"' for b in option_order(author_id, BANDS, order)),
+        signs=", ".join(option_order(author_id, SIGNS, order)),
     )
 
 
-def ask(model, text, author_id="", timeout=600, task="profile"):
-    prompt = build_prompt(text, author_id, task)
+def ask(model, text, author_id="", timeout=600, task="profile", order="parity"):
+    prompt = build_prompt(text, author_id, task, order)
     body = {
         "model": model,
         "messages": [
@@ -132,7 +137,7 @@ def ask(model, text, author_id="", timeout=600, task="profile"):
     return r.json()["message"]["content"]
 
 
-def ask_openrouter(model, text, author_id="", timeout=120, task="profile"):
+def ask_openrouter(model, text, author_id="", timeout=120, task="profile", order="parity"):
     """Same question through OpenRouter. Returns (reply, cost_usd) using the cost OpenRouter reports."""
     key = os.environ.get("OPENROUTER_API_KEY", "")
     if not key:
@@ -141,7 +146,7 @@ def ask_openrouter(model, text, author_id="", timeout=120, task="profile"):
         "model": model,
         "messages": [
             {"role": "system", "content": SYSTEM},
-            {"role": "user", "content": build_prompt(text, author_id, task)},
+            {"role": "user", "content": build_prompt(text, author_id, task, order)},
         ],
         "temperature": 0,
         "seed": SEED,
@@ -165,6 +170,9 @@ def main():
     ap.add_argument("--mask-topic", action="store_true",
                     help="industry task only: mask every word in the topicmask.py lexicon (all four industries) "
                          "in each snippet, after slicing, so slice lengths match the unmasked sweep")
+    ap.add_argument("--order", choices=["parity", "listed", "reversed"], default="parity",
+                    help="option order. parity: flipped per author id (the original sweeps). listed / reversed: "
+                         "one fixed order for every author; run both to cross order with author (step 4)")
     ap.add_argument("--provider", choices=["ollama", "openrouter"], default="ollama")
     ap.add_argument("--max-usd", type=float, default=None,
                     help="openrouter only: stop before total reported cost passes this (set it under the key's limit)")
@@ -175,6 +183,8 @@ def main():
     if args.mask_topic and args.task != "industry":
         ap.error("--mask-topic only applies to --task industry")
     prefix = "results-industry-masked" if args.mask_topic else ("results-industry" if args.task == "industry" else "results")
+    if args.order != "parity":
+        prefix = prefix.replace("results", f"results-crossed-{args.order}", 1)
     default = f"{prefix}-openrouter-{slug}.jsonl" if args.provider == "openrouter" else f"{prefix}-{slug}.jsonl"
     outfile = Path(args.out) if args.out else OUTDIR / default
     spent = 0.0
@@ -210,10 +220,11 @@ def main():
                 break
             try:
                 if args.provider == "openrouter":
-                    raw, cost = ask_openrouter(args.model, snippet, author_id=author["author_id"], task=args.task)
+                    raw, cost = ask_openrouter(args.model, snippet, author_id=author["author_id"], task=args.task,
+                                               order=args.order)
                     spent += cost
                 else:
-                    raw = ask(args.model, snippet, author_id=author["author_id"], task=args.task)
+                    raw = ask(args.model, snippet, author_id=author["author_id"], task=args.task, order=args.order)
                 pred = parse_reply(raw)
                 err = None if pred else f"unparsed: {raw[:200]}"
             except Exception as exc:
@@ -224,6 +235,7 @@ def main():
                 "n_words": n,
                 "model": args.model,
                 **({"provider": "openrouter"} if args.provider == "openrouter" else {}),
+                **({"order": args.order} if args.order != "parity" else {}),
                 "truth": (
                     {"industry": author["topic"], "sign": author["sign"]}
                     if args.task == "industry"
