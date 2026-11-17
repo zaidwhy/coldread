@@ -2,6 +2,10 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## 2026-11-17 (no release)
+
+- Published the 2026-11-10 external red-team pass (`redteam-2026-11-10/`: findings and the four scripts that recompute the claims from `out/*.jsonl`). The README section that already reported its verdicts (2026-11-13) now links to it. No result file changed.
+
 ## 2026-10-28 (no release)
 
 - `build_sample.py` parses its flags with argparse. Before, any argument other than `--industry` was ignored, so `python build_sample.py --help` rebuilt `data/sample.json` instead of printing usage; an unknown flag now exits 2. The rebuilt samples are identical (seed 1938): the same 72 authors as every committed results file. No result changed; 30 tests.
