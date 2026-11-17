@@ -82,7 +82,7 @@ What did not survive, kept in the record on purpose:
 
 ## Where the result is weaker than it was written
 
-Found by an external red-team pass of the public repo (2026-11-10) and re-checked here on
+Found by an external red-team pass of the public repo (2026-11-10; findings and scripts in `redteam-2026-11-10/`) and re-checked here on
 2026-11-13 against the committed `out/*.jsonl` and `sweep.py`. No result file changed.
 
 - **Option order drives gender accuracy.** `sweep.py::option_order` lists "male" first for 38
