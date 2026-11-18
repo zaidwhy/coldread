@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" width="900" height="450" role="img" aria-label="COLD READ results: gender inference accuracy versus words of text, for two language models. Llama 3.1 8B clears chance at 50 words; Qwen 2.5 7B needs 800 words. The star sign control never leaves its floor.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" width="900" height="450" role="img" aria-label="COLD READ results with every author asked under both option orders: gender inference accuracy versus words of text for three language models. Llama 3.1 8B clears chance at 25 words, Mistral 7B at 50, Qwen 2.5 7B at 100. The star sign control never reaches its bar.">
+<style>@font-face{font-family:'Geist Mono';font-weight:100 900;src:url(data:font/woff;base64,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) format('woff')}</style>
 <!--
   ============================================================================
   ORIGINAL WORK - AUTHORSHIP MANIFEST
@@ -6,9 +7,9 @@
   Title      : COLD READ, gender inference curves. Plate 02.
   Author     : Zaid Ali Syed
   Origin     : https://github.com/zaidwhy/coldread
-  Data       : 72 authors, Blog Authorship Corpus. 504 calls per model,
-               temperature 0, seed 1938. Wilson 95% intervals.
-               Verbatim from coldread/RESULT.md, run 2026-08-23.
+  Data       : 72 authors, Blog Authorship Corpus. 1,008 calls per model,
+               every author under both option orders, temperature 0,
+               seed 1938. From coldread/RESULT.md step 4, run 2026-11-18.
   Copyright  : (c) 2026 Zaid Ali Syed. All rights reserved.
   PGP key    : EFE9 4832 B2B9 80D9 B583  91F2 8FAA BCC1 B1AC 09E5
 
@@ -27,80 +28,87 @@
 </defs>
 
 <g clip-path="url(#cr-clip)">
-<rect x="0" y="0" width="900" height="450" fill="#0B0E14"/>
+<rect x="0" y="0" width="900" height="450" fill="#030303"/>
 
 <!-- title -->
-<text x="78" y="36" fill="#E9EEF5" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="17" font-weight="700" letter-spacing="1.6">THE ANONYMITY HALF-LIFE BELONGS TO THE READER</text>
-<text x="78" y="57" fill="#7D8794" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="11.5">Gender inferred from a person's own words. Same 72 authors, two readers.</text>
-
-<!-- legend -->
-<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10.5">
-<rect x="672" y="26" width="14" height="3" fill="#22D3EE"/><text x="692" y="33" fill="#9AA5B1">llama3.1:8b</text>
-<rect x="672" y="42" width="14" height="3" fill="#F59E0B"/><text x="692" y="49" fill="#9AA5B1">qwen2.5:7b</text>
-<rect x="672" y="58" width="14" height="3" fill="#6B7280"/><text x="692" y="65" fill="#9AA5B1">star sign (control)</text>
-</g>
+<text x="78" y="36" fill="#fafafa" font-family="'Geist Mono', ui-monospace, monospace" font-size="17" font-weight="700" letter-spacing="1.6">THE ANONYMITY HALF-LIFE BELONGS TO THE READER AND THE PROMPT</text>
+<text x="78" y="57" fill="#8a8a8a" font-family="'Geist Mono', ui-monospace, monospace" font-size="11.5">Gender inferred from a person's own words. Same 72 authors, three readers, each asked under both option orders.</text>
 
 <!-- y gridlines + labels -->
-<g stroke="#1B2430" stroke-width="1">
+<g stroke="#1c1c1c" stroke-width="1">
 <path d="M78 84H858M78 149H858M78 279H858M78 344H858"/>
 </g>
-<g fill="#5C6875" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10" text-anchor="end">
+<g fill="#5c5c5c" font-family="'Geist Mono', ui-monospace, monospace" font-size="10" text-anchor="end">
 <text x="68" y="88">100%</text><text x="68" y="153">75%</text><text x="68" y="218">50%</text><text x="68" y="283">25%</text><text x="68" y="348">0%</text>
 </g>
 
 <!-- chance line -->
-<path d="M78 214H858" stroke="#4B5563" stroke-width="1.5" stroke-dasharray="7 6"/>
-<text x="856" y="207" fill="#6B7280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="9.5" text-anchor="end">chance</text>
+<path d="M78 214H858" stroke="#4a4a4a" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="856" y="207" fill="#737373" font-family="'Geist Mono', ui-monospace, monospace" font-size="9.5" text-anchor="end">chance</text>
 
 <!-- axes -->
-<path d="M78 84V344H858" stroke="#2A3542" stroke-width="1.5" fill="none"/>
+<path d="M78 84V344H858" stroke="#2a2a2a" stroke-width="1.5" fill="none"/>
 
 <!-- x labels -->
-<g fill="#5C6875" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10" text-anchor="middle">
+<g fill="#5c5c5c" font-family="'Geist Mono', ui-monospace, monospace" font-size="10" text-anchor="middle">
 <text x="78" y="364">25</text><text x="208" y="364">50</text><text x="338" y="364">100</text><text x="468" y="364">200</text><text x="598" y="364">400</text><text x="728" y="364">800</text><text x="858" y="364">1600</text>
 </g>
-<text x="468" y="384" fill="#7D8794" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10.5" text-anchor="middle">words of the author's own text shown to the model</text>
+<text x="468" y="384" fill="#8a8a8a" font-family="'Geist Mono', ui-monospace, monospace" font-size="10.5" text-anchor="middle">words of the author's own text shown to the model</text>
 
 <!-- control curve -->
-<polyline points="78,322.4 208,318.8 338,322.4 468,329.4 598,318.8 728,322.4 858,322.4" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="1000" stroke-dashoffset="0">
+<polyline points="78,313.3 208,307.9 338,306.1 468,307.9 598,311.5 728,313.3 858,311.5" fill="none" stroke="#737373" stroke-width="2" stroke-linejoin="round" stroke-dasharray="1000" stroke-dashoffset="0">
 <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.6s" begin="0.2s" fill="freeze"/>
 </polyline>
 
-<!-- qwen curve -->
-<polyline points="78,228.6 208,231.9 338,224.9 468,210.4 598,196.1 728,174.2 858,156.3" fill="none" stroke="#F59E0B" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="1000" stroke-dashoffset="0">
+<!-- qwen2.5:7b curve -->
+<polyline points="78,208.6 208,205 338,195.9 468,179.7 598,165.2 728,152.6 858,138.2" fill="none" stroke="#ff4f9a" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="1000" stroke-dashoffset="0">
 <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.9s" begin="0.5s" fill="freeze"/>
 </polyline>
 
-<!-- llama curve -->
-<polyline points="78,188.8 208,166.9 338,159.9 468,149 598,141.7 728,127.4 858,109.2" fill="none" stroke="#22D3EE" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="1000" stroke-dashoffset="0">
+<!-- mistral:7b curve -->
+<polyline points="78,205 208,183.3 338,181.5 468,186.9 598,181.5 728,174.3 858,161.6" fill="none" stroke="#f5b942" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="1000" stroke-dashoffset="0">
+<animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.9s" begin="0.5s" fill="freeze"/>
+</polyline>
+
+<!-- llama3.1:8b curve -->
+<polyline points="78,181.5 208,167.1 338,152.6 468,141.8 598,140 728,127.3 858,103.9" fill="none" stroke="#f2f5ff" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="1000" stroke-dashoffset="0">
 <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.9s" begin="0.5s" fill="freeze"/>
 </polyline>
 
 <!-- data points -->
-<g fill="#0B0E14" stroke-width="2">
-<g stroke="#6B7280"><circle cx="78" cy="322.4" r="3"/><circle cx="208" cy="318.8" r="3"/><circle cx="338" cy="322.4" r="3"/><circle cx="468" cy="329.4" r="3"/><circle cx="598" cy="318.8" r="3"/><circle cx="728" cy="322.4" r="3"/><circle cx="858" cy="322.4" r="3"/></g>
-<g stroke="#F59E0B"><circle cx="78" cy="228.6" r="3.6"/><circle cx="208" cy="231.9" r="3.6"/><circle cx="338" cy="224.9" r="3.6"/><circle cx="468" cy="210.4" r="3.6"/><circle cx="598" cy="196.1" r="3.6"/><circle cx="858" cy="156.3" r="3.6"/></g>
-<g stroke="#22D3EE"><circle cx="78" cy="188.8" r="3.6"/><circle cx="338" cy="159.9" r="3.6"/><circle cx="468" cy="149" r="3.6"/><circle cx="598" cy="141.7" r="3.6"/><circle cx="728" cy="127.4" r="3.6"/><circle cx="858" cy="109.2" r="3.6"/></g>
+<g fill="#030303" stroke-width="2">
+<g stroke="#737373"><circle cx="78" cy="313.3" r="3"/><circle cx="208" cy="307.9" r="3"/><circle cx="338" cy="306.1" r="3"/><circle cx="468" cy="307.9" r="3"/><circle cx="598" cy="311.5" r="3"/><circle cx="728" cy="313.3" r="3"/><circle cx="858" cy="311.5" r="3"/></g>
+<g stroke="#ff4f9a"><circle cx="78" cy="208.6" r="3.6"/><circle cx="208" cy="205" r="3.6"/><circle cx="468" cy="179.7" r="3.6"/><circle cx="598" cy="165.2" r="3.6"/><circle cx="728" cy="152.6" r="3.6"/><circle cx="858" cy="138.2" r="3.6"/></g>
+<g stroke="#f5b942"><circle cx="78" cy="205" r="3.6"/><circle cx="338" cy="181.5" r="3.6"/><circle cx="468" cy="186.9" r="3.6"/><circle cx="598" cy="181.5" r="3.6"/><circle cx="728" cy="174.3" r="3.6"/><circle cx="858" cy="161.6" r="3.6"/></g>
+<g stroke="#f2f5ff"><circle cx="208" cy="167.1" r="3.6"/><circle cx="338" cy="152.6" r="3.6"/><circle cx="468" cy="141.8" r="3.6"/><circle cx="598" cy="140" r="3.6"/><circle cx="728" cy="127.3" r="3.6"/><circle cx="858" cy="103.9" r="3.6"/></g>
 </g>
 
 <!-- half-life markers -->
 <g opacity="1">
 <animate attributeName="opacity" from="0" to="1" dur="0.6s" begin="2.3s" fill="freeze"/>
-<path d="M208 166.9V214" stroke="#22D3EE" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
-<circle cx="208" cy="166.9" r="7" fill="none" stroke="#22D3EE" stroke-width="2"/>
-<text x="218" y="152" fill="#22D3EE" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="11" font-weight="700">clears at 50 words</text>
-<path d="M728 174.2V214" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
-<circle cx="728" cy="174.2" r="7" fill="none" stroke="#F59E0B" stroke-width="2"/>
-<text x="728" y="163" fill="#F59E0B" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="11" font-weight="700" text-anchor="middle">clears at 800 words</text>
+<path d="M78 181.5V214" stroke="#f2f5ff" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
+<circle cx="78" cy="181.5" r="7" fill="none" stroke="#f2f5ff" stroke-width="2"/>
+<path d="M208 183.3V214" stroke="#f5b942" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
+<circle cx="208" cy="183.3" r="7" fill="none" stroke="#f5b942" stroke-width="2"/>
+<path d="M338 195.9V214" stroke="#ff4f9a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
+<circle cx="338" cy="195.9" r="7" fill="none" stroke="#ff4f9a" stroke-width="2"/>
+</g>
+
+<!-- legend -->
+<g font-family="'Geist Mono', ui-monospace, monospace" font-size="10.5">
+<rect x="612" y="240" width="14" height="3" fill="#f2f5ff"/><text x="632" y="247" fill="#a3a3a3">llama3.1:8b  clears at 25 words</text>
+<rect x="612" y="256" width="14" height="3" fill="#f5b942"/><text x="632" y="263" fill="#a3a3a3">mistral:7b  clears at 50 words</text>
+<rect x="612" y="272" width="14" height="3" fill="#ff4f9a"/><text x="632" y="279" fill="#a3a3a3">qwen2.5:7b  clears at 100 words</text>
+<rect x="612" y="288" width="14" height="3" fill="#737373"/><text x="632" y="295" fill="#a3a3a3">star sign (control)  never clears</text>
 </g>
 
 <!-- finding -->
-<text x="78" y="410" fill="#E9EEF5" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12.5" opacity="1">
+<text x="78" y="410" fill="#fafafa" font-family="'Geist Mono', ui-monospace, monospace" font-size="12.5" opacity="1">
 <animate attributeName="opacity" from="0" to="1" dur="0.7s" begin="2.8s" fill="freeze"/>
-Identical text. One reader needs 50 words to beat a coin flip. The other needs 800. A 16x gap.</text>
+First reported as 50, 800 and 1600 words, a 32x gap. Asked both ways round it is 25, 50 and 100.</text>
 
 <!-- plate line -->
-<rect x="0" y="426" width="900" height="24" fill="#070A0F"/>
-<text x="78" y="442" fill="#4A5563" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10" letter-spacing="2.2">PLATE 02  ·  COLD READ  ·  ORIGINAL RESEARCH OF ZAID ALI SYED  ·  n=72  ·  MMXXVI</text>
+<rect x="0" y="426" width="900" height="24" fill="#000000"/>
+<text x="78" y="442" fill="#4a4a4a" font-family="'Geist Mono', ui-monospace, monospace" font-size="10" letter-spacing="2.2">PLATE 02  ·  COLD READ  ·  ORIGINAL RESEARCH OF ZAID ALI SYED  ·  n=72  ·  MMXXVI</text>
 </g>
 </svg>
