@@ -152,8 +152,8 @@ def seat_view(seat):
         "model": MODEL,
         "profile": SESSION["profiles"][seat],
         "error": SESSION["errors"][seat],
-        # Below 100 words the sweep measured accuracy BELOW chance, not just
-        # low - the model is confidently wrong, not merely uninformed.
+        # Below 100 words this reader's gender answer mostly follows the option order
+        # in the prompt (RESULT.md step 4); the UI warns on this flag.
         "below_chance": word_count < AGE_THRESHOLD,
         "age_inferable": word_count >= AGE_THRESHOLD,
         "gender_inferable": word_count >= GENDER_THRESHOLD,

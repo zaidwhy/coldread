@@ -50,14 +50,15 @@ simulated). No paired test between readers is in the study.
 Runs 2026-08-23 to 2026-10-06, all Q4_K_M via Ollama, regenerated 2026-11-13 with `analyze.py`.
 Half-life in words; "never" means it did not clear within 1600.
 
-| Reader (params) | Gender half-life | Gender at 1600 | Age band half-life | Age at 1600 | Sign (control) | Industry half-life |
-|---|---|---|---|---|---|---|
-| llama3.1:8b (8.0B) | 50 | 90.3% | 25 | 59.7% | never | 25 |
-| qwen2.5:7b-instruct (7.6B) | 800 | 72.2% | 100 | 58.3% | never | 50 |
-| mistral:7b (7.2B) | 1600 | 63.9% | 25 | 70.8% | never | 50 |
-| llama3.2 (3.2B) | never | 61.1% | 100 | 63.9% | never | 200 (27 of 504 unparsed) |
+| Reader (params) | Gender half-life, crossed order | Gender half-life, original (withdrawn) | Gender at 1600, original | Age band half-life | Age at 1600 | Sign (control) | Industry half-life |
+|---|---|---|---|---|---|---|---|
+| llama3.1:8b (8.0B) | 25 | 50 | 90.3% | 25 | 59.7% | never | 25 |
+| qwen2.5:7b-instruct (7.6B) | 100 | 800 | 72.2% | 100 | 58.3% | never | 50 |
+| mistral:7b (7.2B) | 50 | 1600 | 63.9% | 25 | 70.8% | never | 50 |
+| llama3.2 (3.2B) | not rerun | never | 61.1% | 100 | 63.9% | never | 200 (27 of 504 unparsed) |
 
-Full per-step tables with intervals: [`RESULT.md`](RESULT.md). The industry attribute (adults only,
+The crossed column asks every author under both option orders (2026-11-18, `RESULT.md` step 4);
+the other columns are the original runs. Full per-step tables with intervals: [`RESULT.md`](RESULT.md). The industry attribute (adults only,
 four industries, a different 72 authors, 25% bar) and its topic-word masking test are in the last
 two sections of `RESULT.md`; masking about 1.6% of words moved the half-life one grid step
 (llama 25 to 50, qwen 50 to 100) and left the plateau within 5 points, which is inside the noise
@@ -66,10 +67,13 @@ at n = 72. It does not show that style alone carries industry.
 What survived across readers, each a result of the committed `out/` files:
 
 - **The control held** in every reader and every attribute: star sign never cleared its bar.
-- **Readers differ.** On the same authors llama3.1:8b is well ahead of the others on gender.
+- **Readers differ, under one prompt order.** At 1600 words llama3.1:8b leads on crossed gender
+  accuracy (0.924 against 0.792 and 0.701), but only when "female" is listed first; with "male"
+  first the three are not separable.
 - **Exposure accrues.** The curves climb; none snaps on at a threshold.
-- **Size matters inside a family.** llama3.2 (3.2B) never clears gender; llama3.1 (8.0B) clears at 50
-  (the two are also different releases).
+- **Size matters inside a family**, in the original runs only: llama3.2 (3.2B) never clears gender,
+  llama3.1 (8.0B) clears at 50 (the two are also different releases, and the 3B reader was not
+  rerun with the crossed order).
 - **Memorisation was probed**, with a different-author control, and the recorded gap was
   negligible. Numbers for this are unverified (see [Status](#status)).
 

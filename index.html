@@ -340,14 +340,13 @@ function renderPanel(el, name, view) {
     ? '<span class="tag inferable">inferable</span>'
     : '<span class="tag unreliable">unreliable</span>';
 
-  // The thresholds and the below-chance figure are measured for THIS model only.
-  // A second model family (llama3.1:8b) clears gender at 50 words instead of 800 and
-  // is never below chance, so naming the reader is part of stating the number honestly.
+  // Thresholds are measured for THIS model only. Under 100 words its gender answer mostly
+  // follows the order of the options in the prompt (RESULT.md step 4), so the warning says that.
   let warn = "";
   if (view.below_chance) {
     warn = `<div class="warn">UNRELIABLE - below 100 words, ${view.model || "this model"}
-      scores worse than a coin flip on gender (44%). These are confidently wrong
-      guesses, not honest uncertainty. A stronger reader would already know.</div>`;
+      mostly picks whichever gender the prompt lists first (at least 54 of 72 test
+      authors up to 100 words). Treat the gender guess as noise until more is written.</div>`;
   }
 
   el.innerHTML = `
