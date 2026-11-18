@@ -13,7 +13,10 @@ license: MIT
 doi: "10.5281/zenodo.22309660"
 abstract: >
   Measures how many words a person must write before a language model
-  can infer who they are. Finds that the anonymity half-life is a
-  property of the reader model, not the text - among three models of
-  one size class, gender needs 50, 800 or 1600 words on the same text;
-  within one family, the 3B model never clears where the 8B needs 50.
+  can infer who they are, with star sign as a negative control that
+  never clears its bar. Correction of 2026-11-18 (after v1.4.0): the
+  reported 50, 800 and 1600 word gender thresholds were confounded by
+  the order of the answer options. With every author asked under both
+  orders the three readers clear at 25, 100 and 50 words, and the gap
+  between readers appears only when "female" is listed first. See
+  RESULT.md step 4 in the repository.
