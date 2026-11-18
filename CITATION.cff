@@ -1,12 +1,12 @@
 cff-version: 1.2.0
 message: "If you use this project or its findings, please cite it as below."
-title: "COLD READ: The Anonymity Half-Life Is a Property of the Reader"
+title: "COLD READ: The Anonymity Half-Life Depends on the Reader and the Prompt"
 authors:
   - family-names: "Syed"
     given-names: "Zaid Ali"
     orcid: "https://orcid.org/0009-0003-4313-1510"
-version: 1.4.0
-date-released: 2026-10-14
+version: 1.5.0
+date-released: 2026-11-18
 url: "https://github.com/zaidwhy/coldread"
 repository-code: "https://github.com/zaidwhy/coldread"
 license: MIT
@@ -14,7 +14,7 @@ doi: "10.5281/zenodo.22309660"
 abstract: >
   Measures how many words a person must write before a language model
   can infer who they are, with star sign as a negative control that
-  never clears its bar. Correction of 2026-11-18 (after v1.4.0): the
+  never clears its bar. Correction in v1.5.0 (2026-11-18): the
   reported 50, 800 and 1600 word gender thresholds were confounded by
   the order of the answer options. With every author asked under both
   orders the three readers clear at 25, 100 and 50 words, and the gap

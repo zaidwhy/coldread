@@ -2,6 +2,19 @@
 
 Newest first. The four `v1.0.x` tags all landed on 2026-09-05 as the report was prepared for its Zenodo deposit. Study work before that is dated from the git history.
 
+## v1.5.0 - 2026-11-18
+
+### Changed
+- Title is now "COLD READ: The Anonymity Half-Life Depends on the Reader and the Prompt". The earlier title stated a claim this version withdraws.
+- The 32x gender spread between readers (half-lives 50, 800, 1600 words) is withdrawn. README results table, CITATION abstract, Zenodo description and the app's short-text warning now state the crossed-order result.
+
+### Added
+- Step 4 (pre-registered in PLAN.md, f4d8e82, before any crossed row): every author asked under both option orders, three 7-8B readers, 1,008 calls each, 0 unparsed. Crossed gender half-lives 25 (llama3.1:8b), 100 (qwen2.5:7b), 50 (mistral:7b); age band 25 for all; star sign never clears. At 1600 words llama3.1:8b leads on crossed accuracy (0.924 against 0.792 and 0.701) but is not separable with "male" listed first (66, 65, 63 of 72). Verdict under the rule: prompt-conditional.
+- `sweep.py --order listed|reversed`, `order_cross.py`, `scripts/run_crossed.sh`, `out/results-crossed-*.jsonl`, `tests/test_order_cross.py`; 35 tests.
+
+### Not in this version
+- The 3B and 70B readers were not rerun with the crossed order, so the size comparison still carries the confound.
+
 ## 2026-11-17 (no release)
 
 - Published the 2026-11-10 external red-team pass (`redteam-2026-11-10/`: findings and the four scripts that recompute the claims from `out/*.jsonl`). The README section that already reported its verdicts (2026-11-13) now links to it. No result file changed.

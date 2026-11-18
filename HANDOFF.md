@@ -134,3 +134,5 @@ Zaid approved the deposit. README, CHANGELOG, CITATION.cff (version 1.4.0, date 
 - Decision taken: the "never words" wording in analyze.py output stays, because the committed and Zenodo-deposited `out/analysis-*.txt` files contain it and reruns should match them byte for byte.
 
 **Status 2026-11-18:** step 4 (gender option order fully crossed) is run and written up in RESULT.md, README and CLAUDE.md. Verdict under the rule committed beforehand: prompt-conditional. Crossed gender half-lives 25 / 100 / 50 words (llama3.1:8b / qwen2.5:7b / mistral:7b); the 32x spread is withdrawn. Not deposited: a new Zenodo version, the paper title ("...Is a Property of the Reader"), CITATION and the live app's "44%" line in `index.html` still state the old claim and are Zaid's call. Open: rerun the 3B and 70B readers crossed.
+
+**v1.5.0 released 2026-11-18** on Zaid's go: step 4 deposited with the new title. Open: rerun the 3B and 70B readers crossed.

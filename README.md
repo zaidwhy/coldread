@@ -167,8 +167,8 @@ CI (`.github/workflows/ci.yml`) runs the same on Python 3.12.
 ## Status
 
 Measurement closed at n = 72 authors, four readers, one corpus (self-reported 2004 blog labels).
-Archived as Zenodo v1.4.0 (DOI above, `CITATION.cff` 2026-10-14). The archived text predates the
-confound section above; a new deposit needs Zaid's approval and a rerun of the gender sweeps first.
+Archived as Zenodo v1.5.0 (DOI above, `CITATION.cff` 2026-11-18), which carries the crossed-order
+rerun and the new title. Versions up to v1.4.0 state the withdrawn 32x gender spread.
 
 Unverified in this repository: the contamination result (+0.0021 mean trigram overlap, gap against
 control, 20 authors, qwen only) has no raw output committed, and `contamination_check.py` could not
@@ -192,7 +192,7 @@ mention star-sign or birthday terms also has no committed source text. Treat bot
 Code is MIT ([LICENSE](LICENSE)). The written analysis and experimental design are the Zenodo record,
 CC BY 4.0; cite it, do not copy the text:
 
-> Syed, Z. A. (2026). *COLD READ: The Anonymity Half-Life Is a Property of the Reader*.
+> Syed, Z. A. (2026). *COLD READ: The Anonymity Half-Life Depends on the Reader and the Prompt*.
 > Zenodo. https://doi.org/10.5281/zenodo.22309660
 
 Metadata in [`CITATION.cff`](CITATION.cff). ORCID
