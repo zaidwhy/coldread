@@ -107,6 +107,7 @@ Found by an external red-team pass of the public repo (2026-11-10; findings and 
   crossing is later than the half-life reported.
 - **The live app states the withdrawn claim.** `index.html` tells a user under 100 words that the
   reader "scores worse than a coin flip on gender (44%)". Source was not changed in this pass.
+  Fixed 2026-11-18: the app now shows the option-order warning instead.
 - **The 3B "constant predictor" claim.** `RESULT.md` says 157 of 157 "male"; the committed archive
   file (`out/archive/results-qwen2.5_3b-instruct-PREBALANCE.jsonl`) holds 178 of 178 "male" on 26
   authors, all run before counterbalancing, and it was never re-run with the current prompt.
@@ -159,7 +160,7 @@ the confound above.
 
 ## How it is tested
 
-`python -m pytest -q`: 30 passed (2026-11-13, Windows 11, Python 3.12). The tests check that the
+`python -m pytest -q`: 35 passed (2026-11-18, Windows 11, Python 3.14). The tests check that the
 committed JSONL reproduces the half-lives and tables, that the star sign control never clears, the
 industry and masking results, the OpenRouter provider and the topic mask. They do not call a model.
 CI (`.github/workflows/ci.yml`) runs the same on Python 3.12.

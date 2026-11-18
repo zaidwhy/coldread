@@ -27,7 +27,7 @@ gender, age band and star sign every time.
 Brackets are 95% Wilson score intervals. Bold marks the crossing point. The bar is the
 best constant guess available on this sample: gender 50.0%, age band 33.3%, sign 15.3%.
 
-**Half-life gender: 800 words. Half-life age band: 100 words. Sign: never.**
+**Half-life gender: 800 words. Half-life age band: 100 words. Sign: never.** (The gender figure is withdrawn: it was confounded with option order, see Step 4.)
 
 ## What the control proves
 
@@ -149,7 +149,7 @@ different corpus, comparable size. 504 calls, 0 errors, 0 unparsed.
 
 | | qwen2.5:7b-instruct | llama3.1:8b |
 |---|---|---|
-| gender half-life | 800 words | **50 words** |
+| gender half-life (original, withdrawn in Step 4) | 800 words | **50 words** |
 | gender at 1600 words | 72.2% | 90.3% |
 | age band half-life | 100 words | 25 words |
 | age band at 1600 words | 58.3% | 59.7% |
@@ -203,7 +203,7 @@ run, and the 504 (author, words) cells match the other two runs exactly. 504 cal
 
 | | qwen2.5:7b-instruct | llama3.1:8b | mistral:7b |
 |---|---|---|---|
-| gender half-life | 800 words | 50 words | 1600 words |
+| gender half-life (original, withdrawn in Step 4) | 800 words | 50 words | 1600 words |
 | gender at 1600 words | 72.2% | 90.3% | 63.9% |
 | age band half-life | 100 words | 25 words | 25 words |
 | age band at 1600 words | 58.3% | 59.7% | 70.8% |
