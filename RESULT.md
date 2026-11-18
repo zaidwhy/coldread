@@ -5,6 +5,8 @@
 reproduce with `python analyze.py out/results-qwen2.5_7b-instruct.jsonl`.
 
 > **Note, 2026-11-13.** The gender half-lives and the "32x" spread below are confounded by an option-order bias in the prompt (verified against `out/*.jsonl`), and the 3B "157 of 157" and contamination numbers have no raw output committed. See the README section "Where the result is weaker than it was written" and "Status". The tables themselves regenerate from `analyze.py`.
+>
+> **Note, 2026-11-18.** The rerun with a fully crossed option order is done (Step 4 at the end of this file). The 32x gender spread is withdrawn: crossed half-lives are 25, 100 and 50 words, and the reader gap on gender exists only when "female" is listed first.
 
 ## Result
 
@@ -374,3 +376,58 @@ Reproduce with `python analyze.py out/results-industry-masked-<model>.jsonl` (ou
 - At 1600 words qwen is 27 of 72 masked against 30 of 72 unmasked (llama 34 against 34). A 3-hit difference at n = 72 is inside the noise of rule (a), which allows a 2x half-life shift and 10 plateau points. The comparisons across the seven grid steps are uncorrected for multiplicity. The readers are 7.6B (qwen), 8.0B (llama3.1) and 7.2B (mistral) parameters, all Q4_K_M via Ollama.
 - The doubling at both readers is at the resolution of the word-count grid (each step doubles), so it is one grid step, not a measured effect size. One run per reader, n = 72, temperature 0, and Ollama is not fully deterministic here (see the correction above), so a half-life one step either way should not be over-read.
 - Mistral and the 3B reader were not masked.
+
+## Step 4: gender option order fully crossed (run 2026-11-18, rule fixed in PLAN.md before any crossed row)
+
+The claim under test is the one this file is named for: that the spread in gender half-life across readers of one size class (50, 800 and 1,600 words, "32x") is a property of the reader. The original sweeps gave "male first" to 38 authors and "female first" to 34, so a reader that follows list position could not be told apart from one that reads the text. Here every author is asked under both orders: `listed` (male, 13-17 and Aries first) and `reversed`. 72 authors x 7 steps x 2 orders = 1,008 fresh calls per reader, 0 unparsed in all six files. An author's crossed score is the mean of the two orders, so a reader that only picks the first option scores exactly 0.5 on gender. Intervals are author bootstraps (10,000 resamples, seed 1938). The design, the three-way verdict rule and a prediction were committed (`f4d8e82`) before the first crossed call.
+
+Gender, crossed accuracy with 95% interval; "follows" is the number of the 72 authors for whom the reader answered the first-listed gender under both orders:
+
+| Words | llama3.1:8b | follows | qwen2.5:7b-instruct | follows | mistral:7b | follows |
+|---|---|---|---|---|---|---|
+| 25 | 0.625 [0.521, 0.722] | 10 | 0.521 [0.472, 0.562] | 61 | 0.535 [0.458, 0.611] | 39 |
+| 50 | 0.681 [0.583, 0.778] | 10 | 0.535 [0.486, 0.583] | 59 | 0.618 [0.542, 0.694] | 35 |
+| 100 | 0.736 [0.639, 0.826] | 8 | 0.569 [0.514, 0.625] | 54 | 0.625 [0.542, 0.708] | 28 |
+| 200 | 0.778 [0.688, 0.861] | 6 | 0.632 [0.569, 0.694] | 47 | 0.604 [0.514, 0.688] | 27 |
+| 400 | 0.785 [0.688, 0.875] | 3 | 0.688 [0.618, 0.757] | 35 | 0.625 [0.535, 0.715] | 22 |
+| 800 | 0.833 [0.743, 0.910] | 2 | 0.736 [0.660, 0.812] | 26 | 0.653 [0.562, 0.743] | 20 |
+| 1600 | 0.924 [0.861, 0.972] | 3 | 0.792 [0.722, 0.861] | 22 | 0.701 [0.618, 0.778] | 25 |
+
+Half-lives (first step whose lower bound exceeds the bar; every one of them is also sustained to 1,600 words):
+
+| Reader | Gender, original | Gender, crossed | Age band, crossed | Star sign (control), crossed |
+|---|---|---|---|---|
+| llama3.1:8b | 50 | 25 | 25 | never (best 0.097 against a 0.153 bar) |
+| qwen2.5:7b-instruct | 800 | 100 | 25 | never (best 0.097) |
+| mistral:7b | 1600 | 50 | 25 | never (best 0.146) |
+
+Primary test at 1,600 words, llama3.1:8b against each other reader (two comparisons, so 97.5% intervals and p judged against 0.025):
+
+| Attribute | Against | (a) crossed difference | (b) `listed` only, discordant pairs, exact McNemar | (c) `reversed` only |
+|---|---|---|---|---|
+| gender | qwen2.5:7b-instruct | +0.132 [+0.049, +0.208] | 3 vs 2, p = 1.00 | 20 vs 2, p = 0.00012 |
+| gender | mistral:7b | +0.222 [+0.118, +0.326] | 7 vs 4, p = 0.55 | 31 vs 2, p = 1.3e-07 |
+| age band | qwen2.5:7b-instruct | +0.028 [-0.090, +0.146] | 7 vs 12, p = 0.36 | 15 vs 6, p = 0.078 |
+| age band | mistral:7b | -0.049 [-0.174, +0.076] | 9 vs 17, p = 0.17 | 9 vs 8, p = 1.00 |
+
+Reproduce with `python order_cross.py` (output committed as `out/analysis-order-cross.txt`); `tests/test_order_cross.py` asserts the half-lives, the control and the verdict inputs from the committed rows.
+
+**Verdict under the pre-registered rule: prompt-conditional.** llama3.1:8b is ahead of both readers on gender in the crossed score (a) and under the `reversed` order (c), and is not separable from either under the `listed` order (b): with "male" listed first the three readers score 66, 65 and 63 of 72 at 1,600 words. As the rule requires, the earlier sentence "the anonymity half-life is not a property of the text, it is a property of the reader" is replaced for gender by: **it is a property of the reader and the prompt.**
+
+**What changed.**
+- The 32x spread is withdrawn. Crossed, the gender half-lives are 25, 100 and 50 words: a 4x spread, two grid steps, and the reader order changes (mistral was slowest, now second). The 800 and 1,600 word figures were mostly a list-position habit: qwen answers the first-listed gender for 61 of 72 authors at 25 words and still for 22 at 1,600.
+- The gender gap between readers that remains shows only when "female" is listed first. Under `reversed`, mistral is right for 38 of 72 at every step from 400 words up and qwen for 49 at 1,600, against 67 for llama3.1:8b.
+- There is no reader gap on age band at 1,600 words (both intervals span zero), and all three half-lives are 25 words. The earlier 25 / 100 / 25 does not hold either.
+- The control held: star sign never clears in any reader under either order.
+
+**Prediction check.** The session predicted the verdict (prompt-conditional) and predicted the half-lives wrongly: 50 to 100 words for llama3.1:8b (got 25) and 800 or never for qwen and mistral (got 100 and 50).
+
+**What this does and does not show.**
+- The crossed half-life is not comparable to the original ones as a word count. Position-following authors score exactly 0.5, which shrinks the variance, so a small real signal clears the bar early: qwen clears at 100 words with 0.569 while only 14 of 72 authors are right under both orders. "Clears the bar" here means "better than a coin", not "usable".
+- llama3.1:8b at 25 words clears by 0.021 (lower bound 0.521); one grid step either way should not be over-read.
+- The three lists (gender, age band, sign) flip together, so an age or sign order effect cannot be separated from the gender one in this design. Age shows a milder version of the same habit (qwen 54 against 39 at 1,600 words).
+- Only two orders of a two-option list, one prompt wording, one corpus, n = 72 authors (36 men, 36 women), three readers of 7 to 8B parameters at Q4_K_M. The 3B reader and the hosted 70B reader were not rerun, so the size-pair result (step 2) still carries the confound.
+- Rerun stability, measured: of the 504 original rows per reader, the fresh row with the same author, step and order gives the same gender for 503 (llama3.1:8b), 504 (qwen) and 504 (mistral). A runner fault (below) also produced 249 accidental same-order repeat pairs for llama3.1:8b: 248 agree on gender, 235 on every field (`out/repeats-crossed-listed-llama3.1_8b.jsonl`).
+- Model digests: llama3.1:8b `46e0c10c039e`, qwen2.5:7b-instruct `845dbda0ea48`, mistral:7b `6577803aa9a0` (`out/crossed-model-digests.txt`).
+
+**Run incident.** The disk filled during the first reader's run (one empty reply, removed and rerun), and a stopped runner left its sweep alive, so two processes appended to one file. The first valid row per (author, step) was kept and the repeats moved to the file named above before any analysis; `scripts/run_crossed.sh` now holds a lock and checks free space before each model pull.

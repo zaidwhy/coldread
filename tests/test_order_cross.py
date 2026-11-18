@@ -60,3 +60,21 @@ def test_fixed_orders_ignore_the_author_id_and_parity_is_unchanged():
         assert sweep.option_order(author, sweep.GENDERS, "reversed") == ["female", "male"]
     assert sweep.option_order("7", sweep.GENDERS) == ["female", "male"]
     assert sweep.option_order("8", sweep.GENDERS) == ["male", "female"]
+
+
+def test_committed_crossed_rows_reproduce_result_md_step4():
+    res = order_cross.run()
+    gender = {m: t["half_life"]["gender"] for m, t in res["tables"].items()}
+    assert gender == {"llama3.1:8b": 25, "qwen2.5:7b-instruct": 100, "mistral:7b": 50}
+    for table in res["tables"].values():
+        assert table["half_life"]["age_band"] == 25
+        assert table["half_life"]["sign"] is None
+        assert all(cell["authors"] == 72 for cell in table["cells"].values())
+    alpha = 1 - res["level"]
+    for other in ("qwen2.5:7b-instruct", "mistral:7b"):
+        gap = res["primary"][other]["gender"]
+        assert gap["lo"] > 0  # ahead in the crossed score
+        assert gap["listed"][2] > alpha  # not separable with male listed first
+        assert gap["reversed"][2] < alpha
+        age = res["primary"][other]["age_band"]
+        assert age["lo"] < 0 < age["hi"]

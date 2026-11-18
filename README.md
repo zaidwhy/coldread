@@ -7,8 +7,10 @@
 Four local language models were shown the same 72 bloggers in growing slices (25 to 1600 words)
 and asked for gender, age band and star sign every time; the number of words each needed to beat
 a coin flip differed widely between models, while the star sign control, which cannot be inferred
-from style, never cleared its bar. One part of that result does not hold up: the headline "32x
-spread" in gender is confounded by an option-order bias in the prompt (see
+from style, never cleared its bar. One part of that result did not hold up: the headline "32x
+spread" in gender was mostly a prompt habit. A rerun with every author asked under both option
+orders (2026-11-18) puts the gender half-lives at 25, 100 and 50 words, and the gap between
+readers appears only when "female" is listed first (see
 [Where the result is weaker than it was written](#where-the-result-is-weaker-than-it-was-written)).
 
 It is for anyone who quotes a word-count threshold for anonymity, and for anyone who wants to run
@@ -104,7 +106,15 @@ Found by an external red-team pass of the public repo (2026-11-10; findings and 
 - **The 3B "constant predictor" claim.** `RESULT.md` says 157 of 157 "male"; the committed archive
   file (`out/archive/results-qwen2.5_3b-instruct-PREBALANCE.jsonl`) holds 178 of 178 "male" on 26
   authors, all run before counterbalancing, and it was never re-run with the current prompt.
-- **A fix needs a rerun** with the gender options in a fixed or fully crossed order. Not run.
+- **The rerun with a fully crossed order is done (2026-11-18, `RESULT.md` step 4).** Design and
+  verdict rule were committed before the first call; 1,008 fresh calls per reader, 0 unparsed.
+  Crossed gender half-lives: llama3.1:8b 25 words, qwen2.5:7b 100, mistral:7b 50 (was 50, 800,
+  1600), so the "32x" spread is withdrawn. At 1600 words llama3.1:8b still leads on crossed gender
+  accuracy (0.924 against 0.792 and 0.701; differences +0.132 [+0.049, +0.208] and +0.222 [+0.118,
+  +0.326], 97.5% intervals), but with "male" listed first the three readers are not separable (66,
+  65 and 63 of 72). Verdict under the pre-registered rule: prompt-conditional. The gender gap is a
+  property of the reader and the prompt. Age band shows no reader gap. Star sign never clears.
+  Not rerun: the 3B and 70B readers, so the size comparison still carries the confound.
 
 ## The artifact and its ethics rule
 

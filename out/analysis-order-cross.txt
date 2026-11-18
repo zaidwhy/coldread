@@ -1,0 +1,112 @@
+
+== llama3.1:8b
+gender: bar 0.500 | crossed half-life 25 | sustained 25
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.625*  [0.521, 0.722]      45        45          40            10       72
+     50  0.681*  [0.583, 0.778]      51        47          44            10       72
+    100  0.736*  [0.639, 0.826]      52        54          49             8       72
+    200  0.778*  [0.688, 0.861]      56        56          52             6       72
+    400  0.785*  [0.688, 0.875]      57        56          55             3       72
+    800  0.833*  [0.743, 0.910]      61        59          59             2       72
+   1600  0.924*  [0.861, 0.972]      66        67          65             3       72
+age_band: bar 0.333 | crossed half-life 25 | sustained 25
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.458*  [0.354, 0.562]      32        34          26             0       72
+     50  0.500*  [0.396, 0.597]      37        35          28             0       72
+    100  0.562*  [0.458, 0.660]      41        40          34             0       72
+    200  0.556*  [0.451, 0.660]      41        39          34             0       72
+    400  0.576*  [0.472, 0.681]      42        41          35             0       72
+    800  0.618*  [0.514, 0.715]      45        44          39             0       72
+   1600  0.674*  [0.576, 0.771]      49        48          43             0       72
+sign (control): bar 0.153 | crossed half-life None | sustained None
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.056   [0.014, 0.111]       4         4           3             0       72
+     50  0.021   [0.000, 0.049]       2         1           0             0       72
+    100  0.056   [0.021, 0.097]       5         3           1             0       72
+    200  0.042   [0.007, 0.083]       4         2           1             0       72
+    400  0.069   [0.021, 0.132]       5         5           4             0       72
+    800  0.069   [0.021, 0.132]       4         6           4             0       72
+   1600  0.097   [0.042, 0.167]       7         7           5             0       72
+repeat check: 503 of 504 committed parity-order gender predictions match the fresh row with the same order
+
+== qwen2.5:7b-instruct
+gender: bar 0.500 | crossed half-life 100 | sustained 100
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.521   [0.472, 0.562]      36        39           7            61       72
+     50  0.535   [0.486, 0.583]      38        39           9            59       72
+    100  0.569*  [0.514, 0.625]      41        41          14            54       72
+    200  0.632*  [0.569, 0.694]      50        41          22            47       72
+    400  0.688*  [0.618, 0.757]      56        43          32            35       72
+    800  0.736*  [0.660, 0.812]      61        45          40            26       72
+   1600  0.792*  [0.722, 0.861]      65        49          46            22       72
+age_band: bar 0.333 | crossed half-life 25 | sustained 25
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.444*  [0.368, 0.521]      35        29          13            18       72
+     50  0.479*  [0.396, 0.562]      38        31          18            12       72
+    100  0.528*  [0.438, 0.618]      43        33          24             8       72
+    200  0.569*  [0.472, 0.660]      48        34          30             6       72
+    400  0.556*  [0.458, 0.653]      47        33          31             7       72
+    800  0.590*  [0.486, 0.694]      48        37          36             4       72
+   1600  0.646*  [0.549, 0.743]      54        39          39             1       72
+sign (control): bar 0.153 | crossed half-life None | sustained None
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.069   [0.028, 0.125]       4         6           2             0       72
+     50  0.090   [0.035, 0.153]       6         7           4             0       72
+    100  0.097   [0.049, 0.160]       8         6           3             0       72
+    200  0.069   [0.021, 0.132]       5         5           4             0       72
+    400  0.090   [0.035, 0.153]       8         5           4             0       72
+    800  0.076   [0.028, 0.139]       7         4           4             0       72
+   1600  0.083   [0.028, 0.146]       7         5           5             0       72
+repeat check: 504 of 504 committed parity-order gender predictions match the fresh row with the same order
+
+== mistral:7b
+gender: bar 0.500 | crossed half-life 50 | sustained 50
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.535   [0.458, 0.611]      37        40          18            39       72
+     50  0.618*  [0.542, 0.694]      50        39          27            35       72
+    100  0.625*  [0.542, 0.708]      51        39          31            28       72
+    200  0.604*  [0.514, 0.688]      48        39          30            27       72
+    400  0.625*  [0.535, 0.715]      52        38          34            22       72
+    800  0.653*  [0.562, 0.743]      56        38          37            20       72
+   1600  0.701*  [0.618, 0.778]      63        38          38            25       72
+age_band: bar 0.333 | crossed half-life 25 | sustained 25
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.479*  [0.396, 0.556]      39        30          16             2       72
+     50  0.542*  [0.451, 0.632]      43        35          26             2       72
+    100  0.604*  [0.514, 0.694]      47        40          32             0       72
+    200  0.604*  [0.514, 0.694]      47        40          31             0       72
+    400  0.625*  [0.535, 0.715]      49        41          33             0       72
+    800  0.632*  [0.535, 0.729]      50        41          37             0       72
+   1600  0.722*  [0.632, 0.806]      57        47          44             0       72
+sign (control): bar 0.153 | crossed half-life None | sustained None
+  words  crossed  95% interval    listed  reversed  same+right  follows-list  authors
+     25  0.118   [0.069, 0.174]       8         9           1            17       72
+     50  0.139   [0.076, 0.208]      10        10           5             8       72
+    100  0.146   [0.090, 0.208]      11        10           3             9       72
+    200  0.139   [0.083, 0.201]      11         9           2             6       72
+    400  0.125   [0.069, 0.188]      11         7           3             6       72
+    800  0.118   [0.062, 0.181]      10         7           2             4       72
+   1600  0.125   [0.069, 0.194]      11         7           4             6       72
+repeat check: 504 of 504 committed parity-order gender predictions match the fresh row with the same order
+
+== primary test at 1600 words: llama3.1:8b minus other (97.5% intervals, p judged against 0.025)
+gender   vs qwen2.5:7b-instruct  crossed diff +0.132 [+0.049, +0.208] | listed: 3 vs 2, p=1.0000 | reversed: 20 vs 2, p=0.0001
+age_band vs qwen2.5:7b-instruct  crossed diff +0.028 [-0.090, +0.146] | listed: 7 vs 12, p=0.3593 | reversed: 15 vs 6, p=0.0784
+gender   vs mistral:7b           crossed diff +0.222 [+0.118, +0.326] | listed: 7 vs 4, p=0.5488 | reversed: 31 vs 2, p=0.0000
+age_band vs mistral:7b           crossed diff -0.049 [-0.174, +0.076] | listed: 9 vs 17, p=0.1686 | reversed: 9 vs 8, p=1.0000
+
+== gender at every step, uncorrected (95% intervals)
+vs qwen2.5:7b-instruct     25 words  crossed diff +0.104 [+0.007, +0.194] | listed p=0.1221 | reversed p=0.3075
+vs qwen2.5:7b-instruct     50 words  crossed diff +0.146 [+0.049, +0.236] | listed p=0.0106 | reversed p=0.1849
+vs qwen2.5:7b-instruct    100 words  crossed diff +0.167 [+0.076, +0.250] | listed p=0.0522 | reversed p=0.0072
+vs qwen2.5:7b-instruct    200 words  crossed diff +0.146 [+0.062, +0.222] | listed p=0.2632 | reversed p=0.0041
+vs qwen2.5:7b-instruct    400 words  crossed diff +0.097 [+0.000, +0.194] | listed p=1.0000 | reversed p=0.0192
+vs qwen2.5:7b-instruct    800 words  crossed diff +0.097 [+0.000, +0.188] | listed p=1.0000 | reversed p=0.0161
+vs qwen2.5:7b-instruct   1600 words  crossed diff +0.132 [+0.062, +0.201] | listed p=1.0000 | reversed p=0.0001
+vs mistral:7b              25 words  crossed diff +0.090 [+0.000, +0.181] | listed p=0.0963 | reversed p=0.4049
+vs mistral:7b              50 words  crossed diff +0.062 [-0.035, +0.160] | listed p=1.0000 | reversed p=0.1849
+vs mistral:7b             100 words  crossed diff +0.111 [+0.021, +0.201] | listed p=1.0000 | reversed p=0.0026
+vs mistral:7b             200 words  crossed diff +0.174 [+0.083, +0.264] | listed p=0.0768 | reversed p=0.0015
+vs mistral:7b             400 words  crossed diff +0.160 [+0.049, +0.271] | listed p=0.3323 | reversed p=0.0021
+vs mistral:7b             800 words  crossed diff +0.181 [+0.056, +0.299] | listed p=0.3593 | reversed p=0.0008
+vs mistral:7b            1600 words  crossed diff +0.222 [+0.132, +0.312] | listed p=0.5488 | reversed p=0.0000

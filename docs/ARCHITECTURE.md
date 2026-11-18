@@ -68,7 +68,7 @@ tests/test_analysis.py   smoke test: the committed JSONL reproduces the headline
 | Reply is not parseable JSON | no prediction for that cell | stored as an error row and counted as unparsed in the analysis header |
 | A failed row on resume | `sweep.py` treats any stored row as done, so it would never retry it | the runner script removes error rows and reruns until all 504 are clean |
 | Author shorter than a word count | the slice would silently duplicate the previous step | that cell is skipped, so the curve is never flattened by padding |
-| Option order bias | accuracy follows the first-listed option (verified 2026-11-13: mistral answered "female" for all 34 female-first authors at 1600 words) | partial: per-author flip; a fully crossed or fixed order and a rerun are needed |
+| Option order bias | accuracy follows the first-listed option (verified 2026-11-13: mistral answered "female" for all 34 female-first authors at 1600 words) | `sweep.py --order listed|reversed` asks every author under both orders and `order_cross.py` scores the mean, so a first-option picker scores 0.5 (three 7-8B readers rerun 2026-11-18, `RESULT.md` step 4) |
 | The model memorised the corpus | accuracy would be retrieval | direct probe with a different-author control; run and ruled out, see `RESULT.md` for which models |
 
 ## Tradeoffs
@@ -100,5 +100,5 @@ $0. About 4 to 5 GB of disk per model and about 30 to 45 minutes of GPU per 504-
 
 ## Future
 
-- Rerun the gender sweeps with a fully crossed option order; the mistral family result and the llama 3B/8B size pair are already in `RESULT.md` but share the order confound.
+- Rerun the llama 3B and hosted 70B readers with the crossed option order; the size-pair result in `RESULT.md` still shares the order confound.
 - Any new attribute waits on a written ethics decision in `HANDOFF.md`.

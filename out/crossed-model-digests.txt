@@ -1,0 +1,3 @@
+llama3.1:8b                46e0c10c039e    4.9 GB    Less than a second ago    
+qwen2.5:7b-instruct        845dbda0ea48    4.7 GB    Less than a second ago    
+mistral:7b                 6577803aa9a0    4.4 GB    Less than a second ago    
