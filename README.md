@@ -1,5 +1,7 @@
 # COLD READ
 
+<img src=".github/hero.webp" alt="A white plaster head on a stand with blue wire stretched between pins across the face." width="100%">
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22309660.svg)](https://doi.org/10.5281/zenodo.22309660)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
