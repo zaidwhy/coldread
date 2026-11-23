@@ -1,5 +1,7 @@
 # COLD READ
 
+[![A plaster head on a wooden stool with a blue thread network of small knots pinned across one side of the face. AI-generated illustration.](docs/media/hero.webp)](docs/media/hero-loop.mp4)
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22309660.svg)](https://doi.org/10.5281/zenodo.22309660)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
